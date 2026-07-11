@@ -1,0 +1,83 @@
+{
+  "_note": "مكتبة محتوى النظام (source=system). كل عنصر يُولَّد بـ 5 ستايلات مختلفة (photo/3D/vector/cartoon/watercolor) مع تنويع الخلفية واللون والزاوية والإضاءة، إضافةً لتنويع الجسم نفسه عبر subjects. عدّل هنا ثم شغّل: python3 tools/generate_content_images.py",
+  "imageSize": 768,
+  "common": "exactly one single complete object, only one item, no duplicates, no extra copies, no split parts, centered composition, isolated, clearly recognizable for a toddler, child-friendly, no text, no words, no watermark, square 1:1",
+  "styles": [
+    {
+      "id": "photo",
+      "prompt": "professional real photograph, DSLR, eye-level straight-on view, soft natural daylight, plain white seamless studio background, photorealistic, sharp focus"
+    },
+    {
+      "id": "render3d",
+      "prompt": "cute 3D rendered CGI illustration, smooth glossy materials, three-quarter top-down angle, soft studio lighting with gentle shadows, smooth pastel blue gradient background, high detail"
+    },
+    {
+      "id": "vector",
+      "prompt": "flat vector illustration, bold clean simple shapes, front-facing view, even flat lighting, solid mint green background, minimal sticker style"
+    },
+    {
+      "id": "cartoon",
+      "prompt": "bold 2D cartoon illustration, thick clean black outlines, flat bright cel-shaded colors, simple playful preschool cartoon style, slight low angle, bright cheerful lighting, soft warm peach pastel background"
+    },
+    {
+      "id": "watercolor",
+      "prompt": "delicate pencil sketch with soft watercolor wash, hand-painted artistic, three-quarter side angle, gentle diffused light, textured cream paper background, muted soft colors"
+    }
+  ],
+  "voices": [
+    { "id": "sana", "voice": "ar-JO-SanaNeural", "label": "أنثى (أردنية)" },
+    { "id": "taim", "voice": "ar-JO-TaimNeural", "label": "ذكر (أردني)" }
+  ],
+  "praises": [
+    { "id": "ahsant", "label": "أحسنت", "speech": "أَحْسَنْت" },
+    { "id": "rae3",   "label": "رائع",  "speech": "رَائِع" },
+    { "id": "bravo",  "label": "برافو", "speech": "بْرَافُو" },
+    { "id": "momtaz", "label": "ممتاز", "speech": "مُمْتَاز" },
+    { "id": "shater", "label": "شاطر",  "speech": "شَاطِر" },
+    { "id": "3azeem", "label": "عظيم",  "speech": "عَظِيم" }
+  ],
+  "categories": [
+    {
+      "id": "household",
+      "name": "أدوات المنزل",
+      "icon": "🍽️",
+      "order": 1,
+      "items": [
+        { "id": "spoon",  "label": "معلقة", "speech": "مَعْلَقَة",   "subjects": ["a wooden spoon", "a shiny metal teaspoon", "a colorful plastic baby spoon", "a plain metal dinner spoon", "a small ceramic spoon"] },
+        { "id": "cup",    "label": "كباية", "speech": "كُبَّايَة",   "subjects": ["a white ceramic mug", "a clear glass cup of water", "a colorful plastic kids cup", "a blue coffee mug", "a striped tea cup"] },
+        { "id": "plate",  "label": "صحن", "speech": "صَحْن",     "subjects": ["a plain white round plate", "a blue patterned ceramic plate", "a wooden dinner plate", "a green ceramic plate", "a simple empty round plate"] },
+        { "id": "fork",   "label": "شوكة", "speech": "شَوْكَة",    "subjects": ["a shiny metal fork", "a bright red plastic fork", "a silver dinner fork", "a small dessert fork", "a matte black fork"] },
+        { "id": "pot",    "label": "طنجرة", "speech": "طَنْجَرَة",   "subjects": ["a stainless steel cooking pot with lid", "a red enamel cooking pot", "a small metal saucepan", "a black cast iron pot", "a cream enamel cooking pot with two handles"] },
+        { "id": "bottle", "label": "زجاجة مية", "speech": "زُجَاجَة مَيّة", "subjects": ["a clear plastic water bottle", "a glass water bottle", "a blue reusable water bottle", "a green sports water bottle", "a pink kids water bottle"] }
+      ]
+    },
+    {
+      "id": "animals",
+      "name": "الحيوانات",
+      "icon": "🐾",
+      "order": 2,
+      "items": [
+        { "id": "cat",    "label": "قطة", "speech": "قِطَّة",   "subjects": ["an orange tabby cat", "a fluffy white cat", "a black cat", "a grey kitten", "a calico cat"] },
+        { "id": "dog",    "label": "كلب", "speech": "كَلْب",   "subjects": ["a golden retriever dog", "a small brown puppy", "a fluffy white dog", "a black labrador dog", "a spotted dalmatian dog"] },
+        { "id": "bird",   "label": "عصفور", "speech": "عُصْفُور", "subjects": ["a small yellow bird", "a little blue bird", "a brown sparrow", "a red robin bird", "a small brown garden bird"] },
+        { "id": "horse",  "label": "حصان", "speech": "حِصَان",  "subjects": ["a brown horse, full body", "a dapple grey horse, full body", "a black horse", "a chestnut pony", "a spotted horse"] },
+        { "id": "duck",   "label": "بطة", "speech": "بَطَّة",   "subjects": ["a white pekin duck", "a white duck", "a mallard duck with green head", "a brown duck", "a brown mallard duck"] },
+        { "id": "rabbit", "label": "أرنب", "speech": "أَرْنَب",  "subjects": ["a fluffy white bunny rabbit", "a brown baby bunny", "a grey rabbit", "a black and white rabbit", "a light brown rabbit sitting"] }
+      ]
+    },
+    {
+      "id": "vegetables",
+      "name": "الخضراوات",
+      "icon": "🥕",
+      "order": 3,
+      "items": [
+        { "id": "tomato",   "label": "بندورة", "speech": "بَنْدُورَة", "subjects": ["a red tomato", "a small cherry tomato", "a ripe tomato with a green stem", "a round red tomato", "a fresh red tomato"] },
+        { "id": "cucumber", "label": "خيار",   "speech": "خِيَار",    "subjects": ["a single whole green cucumber", "a fresh whole cucumber", "a long green cucumber", "one whole dark green cucumber", "a smooth green cucumber"] },
+        { "id": "carrot",   "label": "جزر",    "speech": "جَزَر",     "subjects": ["an orange carrot", "a fresh carrot with green top", "a whole orange carrot", "a carrot with a leafy green top", "a bright orange carrot"] },
+        { "id": "potato",   "label": "بطاطا",  "speech": "بَطَاطَا",   "subjects": ["a brown potato", "a fresh potato", "a whole brown potato", "a russet potato", "a round brown potato"] },
+        { "id": "onion",    "label": "بصل",    "speech": "بَصَل",     "subjects": ["a yellow onion", "a white onion", "a red onion", "a whole onion with skin", "a fresh brown onion"] },
+        { "id": "pepper",   "label": "فليفلة", "speech": "فِلِيفْلِة",  "subjects": ["a red bell pepper", "a green bell pepper", "a yellow bell pepper", "a shiny orange bell pepper, smooth rounded", "a ripe red bell pepper"] }
+      ]
+    }
+  ]
+}

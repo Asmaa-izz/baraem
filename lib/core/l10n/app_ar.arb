@@ -1,0 +1,117 @@
+{
+  "@@locale": "ar",
+
+  "appName": "براعم",
+  "appTagline": "نتعلّم الكلمات بالصور والصوت",
+
+  "next": "التالي",
+  "listen": "استمع",
+  "quizTitle": "اختبار",
+  "whereIs": "وين {label}؟",
+  "@whereIs": {
+    "placeholders": {
+      "label": { "type": "String" }
+    }
+  },
+  "wellDone": "أحسنت!",
+  "tryAgain": "جرّب تاني",
+  "keyboardHintNext": "المسافة أو ← للتالي",
+  "keyboardHintChoose": "الأرقام أو الأسهم للاختيار",
+
+  "greeting": "أهلاً {name}",
+  "@greeting": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "chooseGroup": "اختَر مجموعة",
+  "learnTitle": "تعلّم",
+  "chooseModeHint": "اختَر تعلّم أو اختبار، ثم اضغط مجموعة",
+  "allGroups": "كل المجموعات",
+  "letsLearn": "نبدأ نتعلّم؟",
+  "progressOf": "{done} / {total}",
+  "@progressOf": {
+    "placeholders": {
+      "done": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+
+  "addProfile": "إضافة طفل",
+  "newProfile": "طفل جديد",
+  "childName": "اسم الطفل",
+  "chooseAvatar": "اختَر صورة",
+  "modeNormal": "عادي",
+  "modeSupport": "دعم",
+  "save": "حفظ",
+  "cancel": "إلغاء",
+  "delete": "حذف",
+
+  "gardenGrowing": "حديقتك تكبر!",
+  "masteredWords": "{count, plural, =0{لم تُتقن كلمات بعد} =1{أتقنت كلمة واحدة} =2{أتقنت كلمتين} few{أتقنت {count} كلمات} other{أتقنت {count} كلمة}}",
+  "@masteredWords": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "keepGoing": "نكمل؟",
+
+  "parentArea": "منطقة الأهل",
+  "enterPin": "أدخل رمز الأهل",
+  "createPin": "أنشئ رمزاً للأهل",
+  "confirmPin": "أعِد إدخال الرمز",
+  "pinWrong": "حاول مرة أخرى",
+  "pinMismatch": "الرمزان غير متطابقين",
+
+  "tabReports": "التقارير",
+  "tabContent": "المحتوى",
+  "tabSettings": "الإعدادات",
+  "tabProfiles": "الأطفال",
+
+  "reportMastered": "متقَنة",
+  "reportLearning": "قيد التعلّم",
+  "reportNew": "جديدة",
+  "reportArchived": "مؤرشفة",
+  "reportAccuracy": "نسبة الإجابات الصحيحة",
+  "reportMasteredThisWeek": "أُتقنت هذا الأسبوع",
+  "reportPerItem": "تقدّم كل عنصر",
+  "reportNoData": "لا توجد بيانات بعد — ابدأ جلسة تعلّم أولاً",
+
+  "settingsMode": "الوضع",
+  "settingsChoices": "عدد خيارات الاختبار",
+  "settingsSessionLength": "طول الجلسة",
+  "settingsMute": "كتم الصوت",
+  "praiseSounds": "أصوات التشجيع",
+  "praiseSoundsHint": "تُسمع عند الإجابة الصحيحة",
+  "addSound": "أضف صوت",
+  "soundName": "اسم الصوت",
+  "pickAudioFile": "اختر ملف صوت",
+  "orRecord": "أو سجّل بصوتك",
+  "restore": "استرجاع",
+  "noPraises": "لا توجد أصوات تشجيع مفعّلة",
+  "resetDefaults": "إعادة الإعدادات الافتراضية",
+  "resetConfirm": "سيُعاد كل شيء للوضع الافتراضي، وتُحذف أصواتك المسجّلة. متابعة؟",
+  "resetDone": "تمت إعادة الإعدادات",
+  "settingsTheme": "المظهر",
+  "themeSystem": "تلقائي",
+  "themeLight": "فاتح",
+  "themeDark": "داكن",
+
+  "addItem": "إضافة عنصر",
+  "editItem": "تعديل عنصر",
+  "itemLabel": "اسم العنصر",
+  "itemCategory": "المجموعة",
+  "pickImage": "اختَر صورة",
+  "takePhoto": "التقط صورة",
+  "recordAudio": "سجّل الصوت",
+  "stopRecording": "إيقاف التسجيل",
+  "playAudio": "تشغيل",
+  "itemSaved": "تم الحفظ",
+  "requiredField": "هذا الحقل مطلوب",
+
+  "loading": "لحظة…",
+  "startSession": "ابدأ",
+  "back": "رجوع",
+  "muteOn": "الصوت مكتوم",
+  "muteOff": "الصوت يعمل"
+}
