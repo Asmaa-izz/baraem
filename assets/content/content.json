@@ -39,7 +39,7 @@
   "categories": [
     {
       "id": "household",
-      "name": "أدوات المنزل",
+      "name": "أدوات المطبخ",
       "icon": "🍽️",
       "order": 1,
       "items": [
@@ -48,7 +48,11 @@
         { "id": "plate",  "label": "صحن", "speech": "صَحْن",     "subjects": ["a plain white round plate", "a blue patterned ceramic plate", "a wooden dinner plate", "a green ceramic plate", "a simple empty round plate"] },
         { "id": "fork",   "label": "شوكة", "speech": "شَوْكَة",    "subjects": ["a shiny metal fork", "a bright red plastic fork", "a silver dinner fork", "a small dessert fork", "a matte black fork"] },
         { "id": "pot",    "label": "طنجرة", "speech": "طَنْجَرَة",   "subjects": ["a stainless steel cooking pot with lid", "a red enamel cooking pot", "a small metal saucepan", "a black cast iron pot", "a cream enamel cooking pot with two handles"] },
-        { "id": "bottle", "label": "زجاجة مية", "speech": "زُجَاجَة مَيّة", "subjects": ["a clear plastic water bottle", "a glass water bottle", "a blue reusable water bottle", "a green sports water bottle", "a pink kids water bottle"] }
+        { "id": "bottle", "label": "زجاجة مية", "speech": "زُجَاجَة مَيّة", "subjects": ["a clear plastic water bottle", "a glass water bottle", "a blue reusable water bottle", "a green sports water bottle", "a pink kids water bottle"] },
+        { "id": "knife",  "label": "سكينة", "speech": "سِكِّينَة", "subjects": ["a kitchen knife", "a stainless steel chef knife", "a small paring knife", "a knife with a wooden handle", "a shiny metal knife"] },
+        { "id": "pan",    "label": "مقلاية", "speech": "مِقْلَايَة", "subjects": ["a black frying pan", "a stainless steel frying pan", "a red non-stick frying pan", "a frying pan seen from above", "a small frying pan with a handle"] },
+        { "id": "kettle", "label": "إبريق", "speech": "إِبْرِيق", "subjects": ["a metal tea kettle", "a stainless steel kettle", "a white ceramic kettle", "a blue enamel kettle", "a classic silver kettle"] },
+        { "id": "tray",   "label": "صينية", "speech": "صِينِيَّة", "subjects": ["a round silver serving tray", "a rectangular metal tray", "a round steel tray", "a shiny golden tray", "a plain metal serving tray"] }
       ]
     },
     {

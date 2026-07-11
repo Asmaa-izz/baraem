@@ -90,6 +90,14 @@ flutter:
     - assets/content/household/pot/audio/
     - assets/content/household/bottle/
     - assets/content/household/bottle/audio/
+    - assets/content/household/knife/
+    - assets/content/household/knife/audio/
+    - assets/content/household/pan/
+    - assets/content/household/pan/audio/
+    - assets/content/household/kettle/
+    - assets/content/household/kettle/audio/
+    - assets/content/household/tray/
+    - assets/content/household/tray/audio/
     - assets/content/animals/cat/
     - assets/content/animals/cat/audio/
     - assets/content/animals/dog/
@@ -102,7 +110,18 @@ flutter:
     - assets/content/animals/duck/audio/
     - assets/content/animals/rabbit/
     - assets/content/animals/rabbit/audio/
-
+    - assets/content/vegetables/tomato/
+    - assets/content/vegetables/tomato/audio/
+    - assets/content/vegetables/cucumber/
+    - assets/content/vegetables/cucumber/audio/
+    - assets/content/vegetables/carrot/
+    - assets/content/vegetables/carrot/audio/
+    - assets/content/vegetables/potato/
+    - assets/content/vegetables/potato/audio/
+    - assets/content/vegetables/onion/
+    - assets/content/vegetables/onion/audio/
+    - assets/content/vegetables/pepper/
+    - assets/content/vegetables/pepper/audio/
   fonts:
     # Display / the word the child sees — rounded, friendly (variable weight axis)
     - family: Baloo Bhaijaan 2
