@@ -5,6 +5,7 @@ import '../../core/utils/ids.dart';
 import '../../data/models/domain.dart';
 import '../../data/models/enums.dart';
 import '../../data/repositories/content_repository.dart';
+import '../../data/repositories/learning_repository.dart';
 import 'engine_config.dart';
 import 'engine_models.dart';
 import 'learning_engine.dart';
@@ -145,18 +146,27 @@ class SessionController extends _$SessionController {
         : await content.getItemsByCategory(_categoryId!);
     _scopeItemIds = scopeItems.map((i) => i.id).toSet();
 
+    // Admit up to activeWindowSize items (in curated order) into this child's
+    // active window before either mode runs. Both browse and quiz then operate
+    // on that window only — a small, per-child set that grows as items are
+    // mastered — instead of the whole (eventually large) category.
+    final learn = ref.read(learningRepositoryProvider);
+    await _admitWithinWindow(profileId, scopeItems, learn);
+
+    final activeIds =
+        (await learn.getActiveStates(profileId)).map((s) => s.itemId).toSet();
+    final windowItems =
+        scopeItems.where((it) => activeIds.contains(it.id)).toList();
+
     if (_sessionMode == SessionMode.learn) {
-      _learnItems = List.of(scopeItems)..shuffle(_engine.random);
+      _learnItems = List.of(windowItems)..shuffle(_engine.random);
       for (final it in _learnItems) {
         _exemplarsByItem[it.id] = await content.getExemplars(it.id);
       }
       return _buildLearnTrial();
     }
 
-    // quiz: make sure every scoped item is quizzable, then start.
-    await _ensureQuizStates(profileId, scopeItems);
-    _session =
-        await ref.read(learningRepositoryProvider).startSession(profileId, _now());
+    _session = await learn.startSession(profileId, _now());
     return _buildQuizTrial(profileId);
   }
 
@@ -191,13 +201,31 @@ class SessionController extends _$SessionController {
 
   // -------------------------------------------------------------- quiz mode
 
-  Future<void> _ensureQuizStates(String childId, List<Item> scopeItems) async {
-    final learn = ref.read(learningRepositoryProvider);
-    for (final item in scopeItems) {
-      final existing = await learn.getState(childId, item.id);
-      if (existing == null) {
-        await learn.initState(childId, item.id, _now());
-      }
+  /// Keeps this child's active window filled to (at most) [activeWindowSize]
+  /// non-graduated items within scope, introducing new items one at a time in
+  /// curated order. A slot only frees when an item durably graduates
+  /// ([LearningEngine.isGraduated]), so growth is gradual — a new word appears
+  /// only after the child has solidly mastered a current one. Runs at session
+  /// start for both browse and quiz.
+  Future<void> _admitWithinWindow(
+    String childId,
+    List<Item> scopeItems,
+    LearningRepository learn,
+  ) async {
+    final states = await learn.getStates(childId);
+    final statedIds = states.map((s) => s.itemId).toSet();
+    var occupants = states
+        .where((s) =>
+            _scopeItemIds.contains(s.itemId) &&
+            s.status != ItemStatus.archived &&
+            !_engine.isGraduated(s))
+        .length;
+    final now = _now();
+    for (final it in scopeItems) {
+      if (occupants >= _cfg.activeWindowSize) break;
+      if (statedIds.contains(it.id)) continue; // already introduced (any status)
+      await learn.initState(childId, it.id, now);
+      occupants++;
     }
   }
 
@@ -223,7 +251,8 @@ class SessionController extends _$SessionController {
       _recent.removeAt(0);
     }
 
-    _options = await _buildOptions(_item, content);
+    final activeItemIds = pool.map((s) => s.itemId).toSet();
+    _options = await _buildOptions(_item, content, activeItemIds);
     _inRetry = false;
     return _view(
       trialMode: TrialMode.quiz,
@@ -236,8 +265,13 @@ class SessionController extends _$SessionController {
   Future<List<QuizOption>> _buildOptions(
     Item target,
     ContentRepository content,
+    Set<String> activeItemIds,
   ) async {
-    final sameCategory = await content.getItemsByCategory(target.categoryId);
+    // Distractors come from the child's active window only (same category), so
+    // the quiz never shows an item that hasn't been introduced yet.
+    final sameCategory = (await content.getItemsByCategory(target.categoryId))
+        .where((i) => activeItemIds.contains(i.id))
+        .toList();
     final distractors = _engine.pickDistractors(
       target,
       sameCategory,

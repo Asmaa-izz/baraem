@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../motion/motion.dart';
 import '../theme/baraem_tokens.dart';
 import '../theme/context_ext.dart';
 import 'emoji_fallback.dart';
@@ -44,9 +45,17 @@ class MediaTile extends StatelessWidget {
             image: image!,
             fit: BoxFit.cover,
             errorBuilder: (context, error, stack) => fallback,
+            // While decoding, show the plain card surface (not the emoji tile,
+            // which reads as a different image) and gently fade the photo in.
+            // The emoji only appears on a genuine load failure (errorBuilder).
             frameBuilder: (context, child, frame, wasSync) {
-              if (wasSync || frame != null) return child;
-              return fallback;
+              if (wasSync) return child;
+              return AnimatedOpacity(
+                opacity: frame == null ? 0 : 1,
+                duration: motionDuration(context, BaraemMotion.crossFade),
+                curve: BaraemMotion.curve,
+                child: child,
+              );
             },
           );
 

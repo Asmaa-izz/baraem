@@ -428,6 +428,18 @@ class $ItemsTable extends Items with TableInfo<$ItemsTable, ItemRow> {
         type: DriftSqlType.string,
         requiredDuringInsert: true,
       ).withConverter<ContentSource>($ItemsTable.$convertersource);
+  static const VerificationMeta _orderIndexMeta = const VerificationMeta(
+    'orderIndex',
+  );
+  @override
+  late final GeneratedColumn<int> orderIndex = GeneratedColumn<int>(
+    'order_index',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -436,6 +448,7 @@ class $ItemsTable extends Items with TableInfo<$ItemsTable, ItemRow> {
     speech,
     audioPath,
     source,
+    orderIndex,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -482,6 +495,12 @@ class $ItemsTable extends Items with TableInfo<$ItemsTable, ItemRow> {
         audioPath.isAcceptableOrUnknown(data['audio_path']!, _audioPathMeta),
       );
     }
+    if (data.containsKey('order_index')) {
+      context.handle(
+        _orderIndexMeta,
+        orderIndex.isAcceptableOrUnknown(data['order_index']!, _orderIndexMeta),
+      );
+    }
     return context;
   }
 
@@ -517,6 +536,10 @@ class $ItemsTable extends Items with TableInfo<$ItemsTable, ItemRow> {
           data['${effectivePrefix}source'],
         )!,
       ),
+      orderIndex: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}order_index'],
+      )!,
     );
   }
 
@@ -541,6 +564,10 @@ class ItemRow extends DataClass implements Insertable<ItemRow> {
   /// falls back to TTS.
   final String? audioPath;
   final ContentSource source;
+
+  /// Curated introduction order within the category (drives the growing active
+  /// window). Items surface in this order, not alphabetical-by-id.
+  final int orderIndex;
   const ItemRow({
     required this.id,
     required this.label,
@@ -548,6 +575,7 @@ class ItemRow extends DataClass implements Insertable<ItemRow> {
     this.speech,
     this.audioPath,
     required this.source,
+    required this.orderIndex,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -566,6 +594,7 @@ class ItemRow extends DataClass implements Insertable<ItemRow> {
         $ItemsTable.$convertersource.toSql(source),
       );
     }
+    map['order_index'] = Variable<int>(orderIndex);
     return map;
   }
 
@@ -581,6 +610,7 @@ class ItemRow extends DataClass implements Insertable<ItemRow> {
           ? const Value.absent()
           : Value(audioPath),
       source: Value(source),
+      orderIndex: Value(orderIndex),
     );
   }
 
@@ -598,6 +628,7 @@ class ItemRow extends DataClass implements Insertable<ItemRow> {
       source: $ItemsTable.$convertersource.fromJson(
         serializer.fromJson<String>(json['source']),
       ),
+      orderIndex: serializer.fromJson<int>(json['orderIndex']),
     );
   }
   @override
@@ -612,6 +643,7 @@ class ItemRow extends DataClass implements Insertable<ItemRow> {
       'source': serializer.toJson<String>(
         $ItemsTable.$convertersource.toJson(source),
       ),
+      'orderIndex': serializer.toJson<int>(orderIndex),
     };
   }
 
@@ -622,6 +654,7 @@ class ItemRow extends DataClass implements Insertable<ItemRow> {
     Value<String?> speech = const Value.absent(),
     Value<String?> audioPath = const Value.absent(),
     ContentSource? source,
+    int? orderIndex,
   }) => ItemRow(
     id: id ?? this.id,
     label: label ?? this.label,
@@ -629,6 +662,7 @@ class ItemRow extends DataClass implements Insertable<ItemRow> {
     speech: speech.present ? speech.value : this.speech,
     audioPath: audioPath.present ? audioPath.value : this.audioPath,
     source: source ?? this.source,
+    orderIndex: orderIndex ?? this.orderIndex,
   );
   ItemRow copyWithCompanion(ItemsCompanion data) {
     return ItemRow(
@@ -640,6 +674,9 @@ class ItemRow extends DataClass implements Insertable<ItemRow> {
       speech: data.speech.present ? data.speech.value : this.speech,
       audioPath: data.audioPath.present ? data.audioPath.value : this.audioPath,
       source: data.source.present ? data.source.value : this.source,
+      orderIndex: data.orderIndex.present
+          ? data.orderIndex.value
+          : this.orderIndex,
     );
   }
 
@@ -651,14 +688,15 @@ class ItemRow extends DataClass implements Insertable<ItemRow> {
           ..write('categoryId: $categoryId, ')
           ..write('speech: $speech, ')
           ..write('audioPath: $audioPath, ')
-          ..write('source: $source')
+          ..write('source: $source, ')
+          ..write('orderIndex: $orderIndex')
           ..write(')'))
         .toString();
   }
 
   @override
   int get hashCode =>
-      Object.hash(id, label, categoryId, speech, audioPath, source);
+      Object.hash(id, label, categoryId, speech, audioPath, source, orderIndex);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -668,7 +706,8 @@ class ItemRow extends DataClass implements Insertable<ItemRow> {
           other.categoryId == this.categoryId &&
           other.speech == this.speech &&
           other.audioPath == this.audioPath &&
-          other.source == this.source);
+          other.source == this.source &&
+          other.orderIndex == this.orderIndex);
 }
 
 class ItemsCompanion extends UpdateCompanion<ItemRow> {
@@ -678,6 +717,7 @@ class ItemsCompanion extends UpdateCompanion<ItemRow> {
   final Value<String?> speech;
   final Value<String?> audioPath;
   final Value<ContentSource> source;
+  final Value<int> orderIndex;
   final Value<int> rowid;
   const ItemsCompanion({
     this.id = const Value.absent(),
@@ -686,6 +726,7 @@ class ItemsCompanion extends UpdateCompanion<ItemRow> {
     this.speech = const Value.absent(),
     this.audioPath = const Value.absent(),
     this.source = const Value.absent(),
+    this.orderIndex = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   ItemsCompanion.insert({
@@ -695,6 +736,7 @@ class ItemsCompanion extends UpdateCompanion<ItemRow> {
     this.speech = const Value.absent(),
     this.audioPath = const Value.absent(),
     required ContentSource source,
+    this.orderIndex = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        label = Value(label),
@@ -707,6 +749,7 @@ class ItemsCompanion extends UpdateCompanion<ItemRow> {
     Expression<String>? speech,
     Expression<String>? audioPath,
     Expression<String>? source,
+    Expression<int>? orderIndex,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -716,6 +759,7 @@ class ItemsCompanion extends UpdateCompanion<ItemRow> {
       if (speech != null) 'speech': speech,
       if (audioPath != null) 'audio_path': audioPath,
       if (source != null) 'source': source,
+      if (orderIndex != null) 'order_index': orderIndex,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -727,6 +771,7 @@ class ItemsCompanion extends UpdateCompanion<ItemRow> {
     Value<String?>? speech,
     Value<String?>? audioPath,
     Value<ContentSource>? source,
+    Value<int>? orderIndex,
     Value<int>? rowid,
   }) {
     return ItemsCompanion(
@@ -736,6 +781,7 @@ class ItemsCompanion extends UpdateCompanion<ItemRow> {
       speech: speech ?? this.speech,
       audioPath: audioPath ?? this.audioPath,
       source: source ?? this.source,
+      orderIndex: orderIndex ?? this.orderIndex,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -763,6 +809,9 @@ class ItemsCompanion extends UpdateCompanion<ItemRow> {
         $ItemsTable.$convertersource.toSql(source.value),
       );
     }
+    if (orderIndex.present) {
+      map['order_index'] = Variable<int>(orderIndex.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -778,6 +827,7 @@ class ItemsCompanion extends UpdateCompanion<ItemRow> {
           ..write('speech: $speech, ')
           ..write('audioPath: $audioPath, ')
           ..write('source: $source, ')
+          ..write('orderIndex: $orderIndex, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -4462,6 +4512,7 @@ typedef $$ItemsTableCreateCompanionBuilder =
       Value<String?> speech,
       Value<String?> audioPath,
       required ContentSource source,
+      Value<int> orderIndex,
       Value<int> rowid,
     });
 typedef $$ItemsTableUpdateCompanionBuilder =
@@ -4472,6 +4523,7 @@ typedef $$ItemsTableUpdateCompanionBuilder =
       Value<String?> speech,
       Value<String?> audioPath,
       Value<ContentSource> source,
+      Value<int> orderIndex,
       Value<int> rowid,
     });
 
@@ -4565,6 +4617,11 @@ class $$ItemsTableFilterComposer extends Composer<_$AppDatabase, $ItemsTable> {
   get source => $composableBuilder(
     column: $table.source,
     builder: (column) => ColumnWithTypeConverterFilters(column),
+  );
+
+  ColumnFilters<int> get orderIndex => $composableBuilder(
+    column: $table.orderIndex,
+    builder: (column) => ColumnFilters(column),
   );
 
   $$CategoriesTableFilterComposer get categoryId {
@@ -4675,6 +4732,11 @@ class $$ItemsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<int> get orderIndex => $composableBuilder(
+    column: $table.orderIndex,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   $$CategoriesTableOrderingComposer get categoryId {
     final $$CategoriesTableOrderingComposer composer = $composerBuilder(
       composer: this,
@@ -4722,6 +4784,11 @@ class $$ItemsTableAnnotationComposer
 
   GeneratedColumnWithTypeConverter<ContentSource, String> get source =>
       $composableBuilder(column: $table.source, builder: (column) => column);
+
+  GeneratedColumn<int> get orderIndex => $composableBuilder(
+    column: $table.orderIndex,
+    builder: (column) => column,
+  );
 
   $$CategoriesTableAnnotationComposer get categoryId {
     final $$CategoriesTableAnnotationComposer composer = $composerBuilder(
@@ -4835,6 +4902,7 @@ class $$ItemsTableTableManager
                 Value<String?> speech = const Value.absent(),
                 Value<String?> audioPath = const Value.absent(),
                 Value<ContentSource> source = const Value.absent(),
+                Value<int> orderIndex = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => ItemsCompanion(
                 id: id,
@@ -4843,6 +4911,7 @@ class $$ItemsTableTableManager
                 speech: speech,
                 audioPath: audioPath,
                 source: source,
+                orderIndex: orderIndex,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -4853,6 +4922,7 @@ class $$ItemsTableTableManager
                 Value<String?> speech = const Value.absent(),
                 Value<String?> audioPath = const Value.absent(),
                 required ContentSource source,
+                Value<int> orderIndex = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => ItemsCompanion.insert(
                 id: id,
@@ -4861,6 +4931,7 @@ class $$ItemsTableTableManager
                 speech: speech,
                 audioPath: audioPath,
                 source: source,
+                orderIndex: orderIndex,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0

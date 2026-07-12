@@ -405,6 +405,17 @@ class _OptionTile extends StatelessWidget {
       fit: BoxFit.cover,
       errorBuilder: (_, _, _) =>
           EmojiFallback(emoji: emoji, seed: option.item.id),
+      // Fade the photo in over the card surface instead of flashing the emoji
+      // tile first (which reads as a jarring image swap on each new card).
+      frameBuilder: (context, child, frame, wasSync) {
+        if (wasSync) return child;
+        return AnimatedOpacity(
+          opacity: frame == null ? 0 : 1,
+          duration: motionDuration(context, BaraemMotion.crossFade),
+          curve: BaraemMotion.curve,
+          child: child,
+        );
+      },
     );
   }
 }

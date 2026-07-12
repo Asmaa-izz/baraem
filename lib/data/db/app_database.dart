@@ -26,7 +26,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.executor);
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   /// Store dates as ISO-8601 UTC text so `nextDue <= now` comparisons are
   /// lexicographically correct and identical across web/native.
@@ -44,6 +44,9 @@ class AppDatabase extends _$AppDatabase {
           }
           if (from < 3) {
             await m.createTable(praises);
+          }
+          if (from < 4) {
+            await m.addColumn(items, items.orderIndex);
           }
         },
         beforeOpen: (details) async {

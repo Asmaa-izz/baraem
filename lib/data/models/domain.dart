@@ -27,6 +27,7 @@ class Item {
     required this.source,
     this.speech,
     this.audioPath,
+    this.orderIndex = 0,
   });
 
   final String id;
@@ -39,6 +40,9 @@ class Item {
 
   /// Per-item audio (bundled asset or recorded file); null → use TTS.
   final String? audioPath;
+
+  /// Curated introduction order within the category (drives the active window).
+  final int orderIndex;
 
   /// The text to pronounce for this item.
   String get spoken => speech ?? label;

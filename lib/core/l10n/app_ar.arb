@@ -80,6 +80,7 @@
   "settingsMode": "الوضع",
   "settingsChoices": "عدد خيارات الاختبار",
   "settingsSessionLength": "طول الجلسة",
+  "settingsActiveWindow": "عدد الكلمات النشطة",
   "settingsMute": "كتم الصوت",
   "praiseSounds": "أصوات التشجيع",
   "praiseSoundsHint": "تُسمع عند الإجابة الصحيحة",

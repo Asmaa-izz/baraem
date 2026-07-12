@@ -9,6 +9,10 @@ import '../models/mappers.dart';
 /// Dumb data access for the learning engine — no algorithm lives here.
 abstract class LearningRepository {
   Future<LearningState?> getState(String childId, String itemId);
+
+  /// Every state for the child, any status (including archived). Used by the
+  /// active-window admission to know which items have already been introduced.
+  Future<List<LearningState>> getStates(String childId);
   Future<List<LearningState>> getActiveStates(String childId);
   Future<List<LearningState>> getDueStates(String childId, DateTime now);
   Future<int> countActive(String childId);
@@ -40,6 +44,14 @@ class DriftLearningRepository implements LearningRepository {
           ..where((t) => t.childId.equals(childId) & t.itemId.equals(itemId)))
         .getSingleOrNull();
     return row?.toDomain();
+  }
+
+  @override
+  Future<List<LearningState>> getStates(String childId) async {
+    final rows = await (db.select(db.learningStates)
+          ..where((t) => t.childId.equals(childId)))
+        .get();
+    return rows.map((r) => r.toDomain()).toList();
   }
 
   @override
@@ -133,7 +145,10 @@ class DriftLearningRepository implements LearningRepository {
       ])
         ..where(db.items.categoryId.equals(cat.id) &
             db.learningStates.id.isNull())
-        ..orderBy([OrderingTerm.asc(db.items.id)])
+        ..orderBy([
+          OrderingTerm.asc(db.items.orderIndex),
+          OrderingTerm.asc(db.items.id),
+        ])
         ..limit(1);
       final row = await query.getSingleOrNull();
       if (row != null) return row.readTable(db.items).toDomain();

@@ -451,6 +451,13 @@ class _ProfileSettings extends ConsumerWidget {
             step: 2,
             onChanged: (v) => save(profile.copyWith(sessionLength: v)),
           ),
+          _Stepper(
+            label: l.settingsActiveWindow,
+            value: profile.activeWindowSize,
+            min: 3,
+            max: 10,
+            onChanged: (v) => save(profile.copyWith(activeWindowSize: v)),
+          ),
         ],
       ),
     );

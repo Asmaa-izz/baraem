@@ -126,6 +126,25 @@ void main() {
     });
   });
 
+  group('isGraduated (frees an active-window slot)', () {
+    test('mastered AND box ≥ kGraduateBox ⇒ graduated', () {
+      expect(
+          engine.isGraduated(ls(status: ItemStatus.mastered, box: kGraduateBox)),
+          isTrue);
+      expect(engine.isGraduated(ls(status: ItemStatus.mastered, box: 5)), isTrue);
+    });
+
+    test('mastered but still in a low box ⇒ not yet graduated', () {
+      expect(engine.isGraduated(ls(status: ItemStatus.mastered, box: 1)), isFalse);
+      expect(engine.isGraduated(ls(status: ItemStatus.mastered, box: 2)), isFalse);
+    });
+
+    test('a high box without mastery does not graduate', () {
+      expect(engine.isGraduated(ls(status: ItemStatus.learning, box: 5)), isFalse);
+      expect(engine.isGraduated(ls(status: ItemStatus.isNew, box: 5)), isFalse);
+    });
+  });
+
   group('itemWeight', () {
     test('recently-seen items are suppressed', () {
       final w = engine.itemWeight(ls(itemId: 'x', nextDue: now), now, {'x'});

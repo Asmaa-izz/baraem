@@ -21,6 +21,7 @@ extension ItemRowMapper on ItemRow {
         source: source,
         speech: speech,
         audioPath: audioPath,
+        orderIndex: orderIndex,
       );
 }
 

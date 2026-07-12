@@ -394,6 +394,12 @@ abstract class AppLocalizations {
   /// **'طول الجلسة'**
   String get settingsSessionLength;
 
+  /// No description provided for @settingsActiveWindow.
+  ///
+  /// In ar, this message translates to:
+  /// **'عدد الكلمات النشطة'**
+  String get settingsActiveWindow;
+
   /// No description provided for @settingsMute.
   ///
   /// In ar, this message translates to:

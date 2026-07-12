@@ -58,7 +58,10 @@ class DriftContentRepository implements ContentRepository {
   Future<List<Item>> getItemsByCategory(String categoryId) async {
     final rows = await (db.select(db.items)
           ..where((i) => i.categoryId.equals(categoryId))
-          ..orderBy([(i) => OrderingTerm.asc(i.id)]))
+          ..orderBy([
+            (i) => OrderingTerm.asc(i.orderIndex),
+            (i) => OrderingTerm.asc(i.id),
+          ]))
         .get();
     return rows.map((r) => r.toDomain()).toList();
   }
@@ -122,12 +125,14 @@ class DriftContentRepository implements ContentRepository {
     required String label,
   }) async {
     final id = newId();
+    final existing = await getItemsByCategory(categoryId);
     await db.into(db.items).insert(
           ItemsCompanion.insert(
             id: id,
             label: label,
             categoryId: categoryId,
             source: ContentSource.user,
+            orderIndex: Value(existing.length),
           ),
         );
     return (await getItem(id))!;

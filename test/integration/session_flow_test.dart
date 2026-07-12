@@ -63,7 +63,118 @@ Future<void> seedTwoCategories(AppDatabase db) async {
   await cat('animals', 2, ['cat', 'dog', 'bird']);
 }
 
+/// Seeds one category with 8 items whose curated [orderIndex] is deliberately
+/// the REVERSE of alphabetical id, so tests can prove the active window follows
+/// curated order, not id. Curated order: h, g, f, e, d, c, b, a.
+Future<void> seedOrderedItems(AppDatabase db) async {
+  await db.into(db.categories).insert(CategoriesCompanion.insert(
+        id: 'household',
+        name: 'أدوات المنزل',
+        icon: '🍽️',
+        orderIndex: 1,
+        source: ContentSource.system,
+      ));
+  const ordered = ['h', 'g', 'f', 'e', 'd', 'c', 'b', 'a'];
+  for (var i = 0; i < ordered.length; i++) {
+    final id = ordered[i];
+    await db.into(db.items).insert(ItemsCompanion.insert(
+          id: id,
+          label: id,
+          categoryId: 'household',
+          source: ContentSource.system,
+          orderIndex: Value(i),
+        ));
+    await db.into(db.exemplars).insert(ExemplarsCompanion.insert(
+          id: '${id}_1',
+          itemId: id,
+          imagePath: 'p/$id',
+          orderIndex: const Value(1),
+          hasImage: const Value(false),
+          source: ContentSource.system,
+        ));
+  }
+}
+
 void main() {
+  test('active window admits only activeWindowSize items, in curated order',
+      () async {
+    final db = AppDatabase.forTesting(NativeDatabase.memory());
+    final container = ProviderContainer(overrides: [
+      appDatabaseProvider.overrideWithValue(db),
+      clockProvider.overrideWithValue(FixedClock(DateTime.utc(2026, 7, 11))),
+      randomProvider.overrideWithValue(Random(4)),
+    ]);
+    addTearDown(() async {
+      container.dispose();
+      await db.close();
+    });
+
+    await seedOrderedItems(db); // 8 items, window default 5
+    final profile = await container
+        .read(profileRepositoryProvider)
+        .createProfile(name: 'ط', avatar: '🐨', mode: ProfileMode.normal);
+    container.read(currentProfileIdProvider.notifier).select(profile.id);
+    container.read(selectedCategoryProvider.notifier).select('household');
+    container.read(sessionModeControllerProvider.notifier).set(SessionMode.quiz);
+
+    await container.read(sessionControllerProvider(profile.id).future);
+
+    final active =
+        await container.read(learningRepositoryProvider).getActiveStates(profile.id);
+    expect(active.length, 5, reason: 'only the window fills, not all 8 items');
+    expect(active.map((s) => s.itemId).toSet(), {'h', 'g', 'f', 'e', 'd'},
+        reason: 'the first 5 by curated orderIndex, not by id');
+  });
+
+  test('a new item is admitted only after a current one solidly graduates',
+      () async {
+    final db = AppDatabase.forTesting(NativeDatabase.memory());
+    final container = ProviderContainer(overrides: [
+      appDatabaseProvider.overrideWithValue(db),
+      clockProvider.overrideWithValue(FixedClock(DateTime.utc(2026, 7, 11))),
+      randomProvider.overrideWithValue(Random(6)),
+    ]);
+    addTearDown(() async {
+      container.dispose();
+      await db.close();
+    });
+
+    await seedOrderedItems(db);
+    final profile = await container
+        .read(profileRepositoryProvider)
+        .createProfile(name: 'ط', avatar: '🐼', mode: ProfileMode.normal);
+    container.read(currentProfileIdProvider.notifier).select(profile.id);
+    container.read(selectedCategoryProvider.notifier).select('household');
+    container.read(sessionModeControllerProvider.notifier).set(SessionMode.quiz);
+
+    final learn = container.read(learningRepositoryProvider);
+    await container.read(sessionControllerProvider(profile.id).future);
+    expect((await learn.getActiveStates(profile.id)).length, 5);
+
+    // A brand-new item must NOT appear just because the child answered a few
+    // correct: mastery alone (low box) does not free a slot.
+    final justMastered = (await learn.getState(profile.id, 'h'))!
+        .copyWith(status: ItemStatus.mastered, leitnerBox: 2, consecutiveCorrect: 3);
+    await learn.upsertState(justMastered);
+    container.invalidate(sessionControllerProvider(profile.id));
+    await container.read(sessionControllerProvider(profile.id).future);
+    expect((await learn.getActiveStates(profile.id)).length, 5,
+        reason: 'mastered-but-not-durable still occupies its slot');
+
+    // Now let it graduate durably (mastered + box ≥ kGraduateBox) → a slot frees
+    // and the next curated item ("c") is admitted.
+    final graduated = (await learn.getState(profile.id, 'h'))!
+        .copyWith(status: ItemStatus.mastered, leitnerBox: 5, consecutiveCorrect: 3);
+    await learn.upsertState(graduated);
+    container.invalidate(sessionControllerProvider(profile.id));
+    await container.read(sessionControllerProvider(profile.id).future);
+
+    final active = await learn.getActiveStates(profile.id);
+    expect(active.map((s) => s.itemId), contains('c'),
+        reason: 'the next curated item is admitted after graduation');
+    expect(active.length, 6, reason: '4 occupants + graduated h + newly admitted c');
+  });
+
   test('learn mode is scoped to the chosen category and never quizzes',
       () async {
     final db = AppDatabase.forTesting(NativeDatabase.memory());

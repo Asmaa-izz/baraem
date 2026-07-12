@@ -15,7 +15,7 @@ class ContentSeeder {
   final AppDatabase db;
   final AssetBundle bundle;
 
-  static const int seedVersion = 2;
+  static const int seedVersion = 3;
   static const String _seedKey = 'seed_version';
 
   /// Default system voice (see `voices` in content.json).
@@ -48,7 +48,9 @@ class ContentSeeder {
               ),
             );
 
-        for (final item in (cat['items'] as List)) {
+        final items = cat['items'] as List;
+        for (var itemIndex = 0; itemIndex < items.length; itemIndex++) {
+          final item = items[itemIndex];
           final itemId = item['id'] as String;
 
           // Per-item audio: bundled `<cat>/<item>/audio/<voice>.mp3` if present.
@@ -63,6 +65,7 @@ class ContentSeeder {
                   speech: Value(item['speech'] as String?),
                   audioPath: Value(hasAudio ? audioPath : null),
                   source: ContentSource.system,
+                  orderIndex: Value(itemIndex),
                 ),
               );
 

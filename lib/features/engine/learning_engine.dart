@@ -9,6 +9,11 @@ import 'engine_models.dart';
 /// Leitner review intervals in days per box (PRD §8).
 const Map<int, int> kLeitnerDays = {1: 0, 2: 1, 3: 3, 4: 7, 5: 14};
 
+/// Leitner box a mastered item must reach before it "graduates" out of the
+/// active window (freeing a slot for a new item). Box ≥ 3 means the item
+/// survived spaced reviews across several days — a solid, durable mastery.
+const int kGraduateBox = 3;
+
 /// Curated confusable pairs (bidirectional). Early quizzes avoid these so the
 /// child rarely errors (errorless learning); later quizzes prefer them.
 const Map<String, Set<String>> kConfusables = {
@@ -76,6 +81,13 @@ class LearningEngine {
   /// A mastered item is archived once it also reaches box 5 and is stable.
   bool isStableForArchive(LearningState s, int masteryThreshold) =>
       s.leitnerBox >= 5 && s.consecutiveCorrect >= masteryThreshold;
+
+  /// Whether an item has durably graduated out of the active window: mastered
+  /// AND advanced past [kGraduateBox] (survived spaced reviews). Graduated items
+  /// keep getting occasional review but no longer occupy an active-window slot,
+  /// so a new item can be admitted in their place.
+  bool isGraduated(LearningState s) =>
+      s.status == ItemStatus.mastered && s.leitnerBox >= kGraduateBox;
 
   // ---- next-item weighted selection ----
 

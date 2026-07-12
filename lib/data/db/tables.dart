@@ -32,6 +32,10 @@ class Items extends Table {
   TextColumn get audioPath => text().nullable()();
   TextColumn get source => textEnum<ContentSource>()();
 
+  /// Curated introduction order within the category (drives the growing active
+  /// window). Items surface in this order, not alphabetical-by-id.
+  IntColumn get orderIndex => integer().withDefault(const Constant(0))();
+
   @override
   Set<Column> get primaryKey => {id};
 }
