@@ -122,6 +122,16 @@ flutter:
     - assets/content/vegetables/onion/audio/
     - assets/content/vegetables/pepper/
     - assets/content/vegetables/pepper/audio/
+    - assets/content/fruits/apple/
+    - assets/content/fruits/apple/audio/
+    - assets/content/fruits/banana/
+    - assets/content/fruits/banana/audio/
+    - assets/content/fruits/orange/
+    - assets/content/fruits/orange/audio/
+    - assets/content/fruits/grapes/
+    - assets/content/fruits/grapes/audio/
+    - assets/content/fruits/strawberry/
+    - assets/content/fruits/strawberry/audio/
   fonts:
     # Display / the word the child sees — rounded, friendly (variable weight axis)
     - family: Baloo Bhaijaan 2

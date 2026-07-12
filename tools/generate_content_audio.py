@@ -28,7 +28,11 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 CONTENT_DIR = ROOT / "assets" / "content"
 CONTENT_JSON = CONTENT_DIR / "content.json"
-VENV_PYTHON = ROOT / ".venv" / "bin" / "python"
+VENV_PYTHON = (
+    ROOT / ".venv" / "Scripts" / "python.exe"
+    if (ROOT / ".venv" / "Scripts" / "python.exe").exists()
+    else ROOT / ".venv" / "bin" / "python"
+)
 MAX_RETRIES = 3
 MIN_VALID_BYTES = 500
 
