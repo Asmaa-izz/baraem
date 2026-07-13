@@ -15,6 +15,7 @@ import '../../../core/widgets/app_button.dart';
 import '../../../core/widgets/app_card.dart';
 import '../../../core/widgets/audio_picker_field.dart';
 import '../../../data/models/domain.dart';
+import '../../../data/models/enums.dart';
 
 /// S8 — add a parent-authored item (image + optional recorded audio + label +
 /// category). Native only for media; on web a note explains the limitation.
@@ -62,8 +63,16 @@ class _ItemEditScreenState extends ConsumerState<ItemEditScreen> {
     await content.createUserExemplar(
       itemId: item.id,
       imagePath: _imagePath!,
-      audioPath: _audioPath,
     );
+    // The recorded/picked clip becomes the item's first voice (played randomly
+    // alongside any others the parent adds later).
+    if (_audioPath != null) {
+      await ref.read(soundRepositoryProvider).addUserSound(
+            ownerType: SoundOwner.item,
+            ownerId: item.id,
+            audioPath: _audioPath!,
+          );
+    }
     if (mounted) context.go('/parent');
   }
 

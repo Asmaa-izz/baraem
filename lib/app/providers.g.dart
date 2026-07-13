@@ -413,14 +413,56 @@ final class PraiseRepositoryProvider
 
 String _$praiseRepositoryHash() => r'a557891b0e407714e1b9b6cf60d0edd6e33b9482';
 
-/// All encouragement clips (system + user). The parent list watches it; the
-/// session filters it to enabled clips for playback.
+@ProviderFor(soundRepository)
+final soundRepositoryProvider = SoundRepositoryProvider._();
+
+final class SoundRepositoryProvider
+    extends
+        $FunctionalProvider<SoundRepository, SoundRepository, SoundRepository>
+    with $Provider<SoundRepository> {
+  SoundRepositoryProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'soundRepositoryProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$soundRepositoryHash();
+
+  @$internal
+  @override
+  $ProviderElement<SoundRepository> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  SoundRepository create(Ref ref) {
+    return soundRepository(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(SoundRepository value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<SoundRepository>(value),
+    );
+  }
+}
+
+String _$soundRepositoryHash() => r'e9bf637624e30aba0339d10ce2340054659f96aa';
+
+/// All encouragement words (system + user). The parent list watches it; the
+/// session filters it to enabled words for playback.
 
 @ProviderFor(praises)
 final praisesProvider = PraisesProvider._();
 
-/// All encouragement clips (system + user). The parent list watches it; the
-/// session filters it to enabled clips for playback.
+/// All encouragement words (system + user). The parent list watches it; the
+/// session filters it to enabled words for playback.
 
 final class PraisesProvider
     extends
@@ -430,8 +472,8 @@ final class PraisesProvider
           Stream<List<Praise>>
         >
     with $FutureModifier<List<Praise>>, $StreamProvider<List<Praise>> {
-  /// All encouragement clips (system + user). The parent list watches it; the
-  /// session filters it to enabled clips for playback.
+  /// All encouragement words (system + user). The parent list watches it; the
+  /// session filters it to enabled words for playback.
   PraisesProvider._()
     : super(
         from: null,
@@ -459,6 +501,95 @@ final class PraisesProvider
 }
 
 String _$praisesHash() => r'd4dd91d3cccd7954253cc378e8f79cdb8c35f178';
+
+/// The voice clips of one item or praise word (system + user), for the shared
+/// sound-management sheet.
+
+@ProviderFor(sounds)
+final soundsProvider = SoundsFamily._();
+
+/// The voice clips of one item or praise word (system + user), for the shared
+/// sound-management sheet.
+
+final class SoundsProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<Sound>>,
+          List<Sound>,
+          Stream<List<Sound>>
+        >
+    with $FutureModifier<List<Sound>>, $StreamProvider<List<Sound>> {
+  /// The voice clips of one item or praise word (system + user), for the shared
+  /// sound-management sheet.
+  SoundsProvider._({
+    required SoundsFamily super.from,
+    required (SoundOwner, String) super.argument,
+  }) : super(
+         retry: null,
+         name: r'soundsProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$soundsHash();
+
+  @override
+  String toString() {
+    return r'soundsProvider'
+        ''
+        '$argument';
+  }
+
+  @$internal
+  @override
+  $StreamProviderElement<List<Sound>> $createElement(
+    $ProviderPointer pointer,
+  ) => $StreamProviderElement(pointer);
+
+  @override
+  Stream<List<Sound>> create(Ref ref) {
+    final argument = this.argument as (SoundOwner, String);
+    return sounds(ref, argument.$1, argument.$2);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is SoundsProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$soundsHash() => r'50e6f432c374568e472dc5ecafa07f11cac291cd';
+
+/// The voice clips of one item or praise word (system + user), for the shared
+/// sound-management sheet.
+
+final class SoundsFamily extends $Family
+    with $FunctionalFamilyOverride<Stream<List<Sound>>, (SoundOwner, String)> {
+  SoundsFamily._()
+    : super(
+        retry: null,
+        name: r'soundsProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// The voice clips of one item or praise word (system + user), for the shared
+  /// sound-management sheet.
+
+  SoundsProvider call(SoundOwner ownerType, String ownerId) =>
+      SoundsProvider._(argument: (ownerType, ownerId), from: this);
+
+  @override
+  String toString() => r'soundsProvider';
+}
 
 @ProviderFor(learningEngine)
 final learningEngineProvider = LearningEngineProvider._();

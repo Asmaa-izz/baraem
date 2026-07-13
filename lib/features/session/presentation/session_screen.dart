@@ -61,8 +61,9 @@ class _SessionScreenState extends ConsumerState<SessionScreen> {
             .where((p) => p.enabled)
             .toList();
     if (clips.isEmpty) return; // parent disabled all — visuals/haptic remain
-    final clip = clips[_praiseRandom.nextInt(clips.length)];
-    ref.read(audioServiceProvider).playPraise(clip.audioPath, clip.label);
+    final word = clips[_praiseRandom.nextInt(clips.length)];
+    // Picks a random enabled voice of the chosen word (TTS fallback inside).
+    ref.read(audioServiceProvider).playPraiseWord(word);
   }
 
   /// Gentle, non-punishing hint on a wrong tap: a soft haptic tick + re-speak

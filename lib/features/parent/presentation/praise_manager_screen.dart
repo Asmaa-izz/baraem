@@ -8,12 +8,13 @@ import '../../../core/l10n/app_localizations.dart';
 import '../../../core/theme/baraem_tokens.dart';
 import '../../../core/theme/context_ext.dart';
 import '../../../core/widgets/app_button.dart';
-import '../../../core/widgets/audio_picker_field.dart';
 import '../../../data/models/domain.dart';
 import '../../../data/models/enums.dart';
+import 'sound_list_sheet.dart';
 
-/// Parent screen: list, listen to, soft-delete/restore, and add encouragement
-/// clips. Deletes are cosmetic (enabled=false); the reset button restores them.
+/// Parent screen: list encouragement *words* (e.g. «شاطر»), each with its own
+/// pool of voices. Tap a word to listen to / add / delete its voices. Deleting a
+/// system word is cosmetic (enabled=false); the reset button restores defaults.
 class PraiseManagerScreen extends ConsumerWidget {
   const PraiseManagerScreen({super.key});
 
@@ -36,9 +37,9 @@ class PraiseManagerScreen extends ConsumerWidget {
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: colors.sageDeep,
         foregroundColor: colors.onAccent,
-        onPressed: () => _showAddSheet(context, ref),
-        icon: const Icon(Icons.mic_none_rounded),
-        label: Text(l.addSound),
+        onPressed: () => _showAddWordSheet(context, ref),
+        icon: const Icon(Icons.add_rounded),
+        label: Text(l.addPraiseWord),
       ),
       body: praisesAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
@@ -56,13 +57,13 @@ class PraiseManagerScreen extends ConsumerWidget {
     );
   }
 
-  Future<void> _showAddSheet(BuildContext context, WidgetRef ref) {
+  Future<void> _showAddWordSheet(BuildContext context, WidgetRef ref) {
     return showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
       backgroundColor: context.colors.ground,
       showDragHandle: true,
-      builder: (_) => const _AddPraiseSheet(),
+      builder: (_) => const _AddPraiseWordSheet(),
     );
   }
 }
@@ -77,16 +78,29 @@ class _PraiseRow extends ConsumerWidget {
     final colors = context.colors;
     final repo = ref.read(praiseRepositoryProvider);
     final enabled = praise.enabled;
+    final soundsAsync =
+        ref.watch(soundsProvider(SoundOwner.praise, praise.id));
+    final voiceCount = soundsAsync.maybeWhen(
+      data: (s) => s.where((x) => x.enabled).length,
+      orElse: () => 0,
+    );
 
     return Card(
       color: colors.card,
       child: ListTile(
+        onTap: () => showSoundListSheet(
+          context,
+          ownerType: SoundOwner.praise,
+          ownerId: praise.id,
+          title: praise.label,
+          fallbackLabel: praise.label,
+        ),
         leading: IconButton(
           icon: Icon(Icons.play_circle_outline_rounded, color: colors.sky),
           iconSize: 32,
           tooltip: l.playAudio,
           onPressed: () =>
-              ref.read(audioServiceProvider).playPraise(praise.audioPath, praise.label),
+              ref.read(audioServiceProvider).playPraiseWord(praise),
         ),
         title: Text(
           praise.label,
@@ -95,9 +109,10 @@ class _PraiseRow extends ConsumerWidget {
             decoration: enabled ? null : TextDecoration.lineThrough,
           ),
         ),
-        subtitle: praise.source == ContentSource.user
-            ? Text('🎙️', style: TextStyle(color: colors.ink2))
-            : null,
+        subtitle: Text(
+          l.voicesCount(voiceCount),
+          style: context.texts.bodyMedium!.copyWith(color: colors.ink2),
+        ),
         trailing: enabled
             ? IconButton(
                 icon: Icon(Icons.delete_outline_rounded, color: colors.ink2),
@@ -114,16 +129,16 @@ class _PraiseRow extends ConsumerWidget {
   }
 }
 
-class _AddPraiseSheet extends ConsumerStatefulWidget {
-  const _AddPraiseSheet();
+class _AddPraiseWordSheet extends ConsumerStatefulWidget {
+  const _AddPraiseWordSheet();
 
   @override
-  ConsumerState<_AddPraiseSheet> createState() => _AddPraiseSheetState();
+  ConsumerState<_AddPraiseWordSheet> createState() =>
+      _AddPraiseWordSheetState();
 }
 
-class _AddPraiseSheetState extends ConsumerState<_AddPraiseSheet> {
+class _AddPraiseWordSheetState extends ConsumerState<_AddPraiseWordSheet> {
   final _name = TextEditingController();
-  String? _audioPath;
   bool _saving = false;
 
   @override
@@ -132,16 +147,23 @@ class _AddPraiseSheetState extends ConsumerState<_AddPraiseSheet> {
     super.dispose();
   }
 
-  bool get _canSave =>
-      !_saving && _name.text.trim().isNotEmpty && _audioPath != null;
+  bool get _canSave => !_saving && _name.text.trim().isNotEmpty;
 
   Future<void> _save() async {
     setState(() => _saving = true);
-    await ref.read(praiseRepositoryProvider).addUserPraise(
-          label: _name.text.trim(),
-          audioPath: _audioPath!,
-        );
-    if (mounted) Navigator.of(context).pop();
+    final word = await ref
+        .read(praiseRepositoryProvider)
+        .addUserPraiseWord(label: _name.text.trim());
+    if (!mounted) return;
+    Navigator.of(context).pop();
+    // Open the new word so voices can be added right away.
+    await showSoundListSheet(
+      context,
+      ownerType: SoundOwner.praise,
+      ownerId: word.id,
+      title: word.label,
+      fallbackLabel: word.label,
+    );
   }
 
   @override
@@ -160,18 +182,13 @@ class _AddPraiseSheetState extends ConsumerState<_AddPraiseSheet> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(l.addSound, style: context.texts.titleLarge),
+          Text(l.addPraiseWord, style: context.texts.titleLarge),
           const SizedBox(height: BaraemSpace.lg),
           TextField(
             controller: _name,
-            decoration: InputDecoration(labelText: l.soundName),
+            decoration: InputDecoration(labelText: l.praiseWordName),
             style: context.texts.bodyLarge,
             onChanged: (_) => setState(() {}),
-          ),
-          const SizedBox(height: BaraemSpace.lg),
-          AudioPickerField(
-            labelForPlayback: _name.text.trim(),
-            onChanged: (path) => setState(() => _audioPath = path),
           ),
           const SizedBox(height: BaraemSpace.xl),
           AppButton.primary(label: l.save, onPressed: _canSave ? _save : null),

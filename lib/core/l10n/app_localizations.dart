@@ -424,6 +424,42 @@ abstract class AppLocalizations {
   /// **'أضف صوت'**
   String get addSound;
 
+  /// No description provided for @manageVoices.
+  ///
+  /// In ar, this message translates to:
+  /// **'الأصوات'**
+  String get manageVoices;
+
+  /// No description provided for @manageVoicesHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'يُختار صوت عشوائي عند النطق. أضف أو احذف كما تشاء.'**
+  String get manageVoicesHint;
+
+  /// No description provided for @noVoices.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا توجد أصوات بعد'**
+  String get noVoices;
+
+  /// No description provided for @voicesCount.
+  ///
+  /// In ar, this message translates to:
+  /// **'{count} أصوات'**
+  String voicesCount(int count);
+
+  /// No description provided for @addPraiseWord.
+  ///
+  /// In ar, this message translates to:
+  /// **'أضف كلمة'**
+  String get addPraiseWord;
+
+  /// No description provided for @praiseWordName.
+  ///
+  /// In ar, this message translates to:
+  /// **'الكلمة'**
+  String get praiseWordName;
+
   /// No description provided for @soundName.
   ///
   /// In ar, this message translates to:

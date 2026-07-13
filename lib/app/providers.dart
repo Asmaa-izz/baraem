@@ -7,12 +7,14 @@ import '../features/engine/engine_models.dart';
 import '../core/utils/clock.dart';
 import '../data/db/app_database.dart';
 import '../data/models/domain.dart';
+import '../data/models/enums.dart';
 import '../data/repositories/content_repository.dart';
 import '../data/repositories/learning_repository.dart';
 import '../data/repositories/praise_repository.dart';
 import '../data/repositories/profile_repository.dart';
 import '../data/repositories/reports_repository.dart';
 import '../data/repositories/settings_repository.dart';
+import '../data/repositories/sound_repository.dart';
 import '../features/engine/learning_engine.dart';
 
 part 'providers.g.dart';
@@ -58,11 +60,21 @@ SettingsRepository settingsRepository(Ref ref) =>
 PraiseRepository praiseRepository(Ref ref) =>
     DriftPraiseRepository(ref.watch(appDatabaseProvider));
 
-/// All encouragement clips (system + user). The parent list watches it; the
-/// session filters it to enabled clips for playback.
+@Riverpod(keepAlive: true)
+SoundRepository soundRepository(Ref ref) =>
+    DriftSoundRepository(ref.watch(appDatabaseProvider));
+
+/// All encouragement words (system + user). The parent list watches it; the
+/// session filters it to enabled words for playback.
 @riverpod
 Stream<List<Praise>> praises(Ref ref) =>
     ref.watch(praiseRepositoryProvider).watchPraises();
+
+/// The voice clips of one item or praise word (system + user), for the shared
+/// sound-management sheet.
+@riverpod
+Stream<List<Sound>> sounds(Ref ref, SoundOwner ownerType, String ownerId) =>
+    ref.watch(soundRepositoryProvider).watchSounds(ownerType, ownerId);
 
 @Riverpod(keepAlive: true)
 LearningEngine learningEngine(Ref ref) => LearningEngine(

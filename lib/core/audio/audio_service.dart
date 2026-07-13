@@ -1,23 +1,30 @@
+import 'dart:math';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:just_audio/just_audio.dart';
 
+import '../../app/providers.dart';
 import '../../data/models/domain.dart';
+import '../../data/models/enums.dart';
+import '../../data/repositories/sound_repository.dart';
 
-/// Speaks item names and plays parent-recorded audio.
-///
-/// System content has no audio files, so the item's Arabic label is spoken via
-/// TTS (offline on mobile, via the browser on web). Parent-recorded files play
-/// through just_audio. All failures are swallowed — audio is never essential,
-/// and Arabic TTS voices may be absent on some platforms.
+/// Speaks item names and plays voice clips. Every item and praise word can own
+/// several voices (see [SoundRepository]); one enabled voice is chosen at random
+/// per playback. When no clip is available the Arabic text is spoken via TTS
+/// (offline on mobile, via the browser on web). All failures are swallowed —
+/// audio is never essential, and Arabic TTS voices may be absent on some
+/// platforms.
 class AudioService {
-  AudioService() {
+  AudioService(this._sounds) {
     _init();
   }
 
+  final SoundRepository _sounds;
   final FlutterTts _tts = FlutterTts();
   final AudioPlayer _player = AudioPlayer();
+  final Random _random = Random();
 
   Future<void> _init() async {
     try {
@@ -35,77 +42,64 @@ class AudioService {
     } catch (_) {}
   }
 
-  /// Plays an encouragement clip on a correct answer: a bundled asset or a
-  /// parent-recorded file, with TTS of [fallbackWord] if playback fails.
-  Future<void> playPraise(String audioPath, String fallbackWord) async {
-    if (audioPath.startsWith('assets/')) {
-      try {
-        await _player.stop();
+  /// Plays one clip, dispatching by path shape: bundled asset, self-contained
+  /// `data:` URI (web), or a native file. Returns whether playback started.
+  Future<bool> _playClip(String audioPath) async {
+    try {
+      await _player.stop();
+      if (audioPath.startsWith('assets/')) {
         await _player.setAsset(audioPath);
-        await _player.play();
-        return;
-      } catch (_) {/* fall through */}
-    } else if (audioPath.startsWith('data:')) {
-      // Self-contained base64 clip (web-uploaded audio).
-      try {
-        await _player.stop();
+      } else if (audioPath.startsWith('data:')) {
         await _player.setUrl(audioPath);
-        await _player.play();
-        return;
-      } catch (_) {/* fall through */}
-    } else if (!kIsWeb && audioPath.isNotEmpty) {
-      try {
-        await _player.stop();
+      } else if (!kIsWeb && audioPath.isNotEmpty) {
         await _player.setFilePath(audioPath);
-        await _player.play();
-        return;
-      } catch (_) {/* fall through */}
+      } else {
+        return false;
+      }
+      await _player.play();
+      return true;
+    } catch (_) {
+      return false;
     }
-    await speak(fallbackWord);
   }
 
-  /// Plays the best available audio for an item: a bundled asset (system),
-  /// a recorded file (user, native), else TTS of the vocalized name.
-  Future<void> playItem(Item item, [Exemplar? exemplar]) async {
-    final audio = item.audioPath;
-
-    // Bundled asset audio (system content).
-    if (audio != null && audio.startsWith('assets/')) {
-      try {
-        await _player.stop();
-        await _player.setAsset(audio);
-        await _player.play();
-        return;
-      } catch (_) {/* fall through */}
-    }
-
-    // Self-contained base64 clip (web-uploaded audio).
-    if (audio != null && audio.startsWith('data:')) {
-      try {
-        await _player.stop();
-        await _player.setUrl(audio);
-        await _player.play();
-        return;
-      } catch (_) {/* fall through */}
-    }
-
-    // Recorded file audio (user content, native only).
-    final file = (audio != null &&
-            !audio.startsWith('assets/') &&
-            !audio.startsWith('data:'))
-        ? audio
-        : exemplar?.audioPath;
-    if (file != null && file.isNotEmpty && !kIsWeb) {
-      try {
-        await _player.stop();
-        await _player.setFilePath(file);
-        await _player.play();
-        return;
-      } catch (_) {/* fall through */}
-    }
-
-    await speak(item.spoken);
+  /// Public one-shot preview (used by the audio picker): play [audioPath], or
+  /// speak [fallbackText] if it can't.
+  Future<void> playClip(String audioPath, String fallbackText) async {
+    if (await _playClip(audioPath)) return;
+    await speak(fallbackText);
   }
+
+  /// Picks a random enabled voice for [ownerType]/[ownerId] and plays it, else
+  /// the optional [nativeFileFallback] (a per-image recording), else TTS of
+  /// [fallbackText].
+  Future<void> playRandomVoice(
+    SoundOwner ownerType,
+    String ownerId,
+    String fallbackText, [
+    String? nativeFileFallback,
+  ]) async {
+    final clips = await _sounds.getEnabledSounds(ownerType, ownerId);
+    if (clips.isNotEmpty) {
+      final pick = clips[_random.nextInt(clips.length)];
+      if (await _playClip(pick.audioPath)) return;
+    }
+    if (nativeFileFallback != null &&
+        nativeFileFallback.isNotEmpty &&
+        !kIsWeb) {
+      if (await _playClip(nativeFileFallback)) return;
+    }
+    await speak(fallbackText);
+  }
+
+  /// Plays a random voice for an item (falling back to a per-exemplar recording,
+  /// then TTS of the vocalized name).
+  Future<void> playItem(Item item, [Exemplar? exemplar]) =>
+      playRandomVoice(SoundOwner.item, item.id, item.spoken, exemplar?.audioPath);
+
+  /// Plays a random voice for an encouragement word, TTS of its label otherwise.
+  Future<void> playPraiseWord(Praise praise) =>
+      playRandomVoice(SoundOwner.praise, praise.id, praise.label);
 
   Future<void> stop() async {
     try {
@@ -121,7 +115,7 @@ class AudioService {
 }
 
 final audioServiceProvider = Provider<AudioService>((ref) {
-  final service = AudioService();
+  final service = AudioService(ref.watch(soundRepositoryProvider));
   ref.onDispose(service.dispose);
   return service;
 });

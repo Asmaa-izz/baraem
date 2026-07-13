@@ -155,7 +155,7 @@ class _AudioPickerFieldState extends ConsumerState<AudioPickerField> {
                 TextButton(
                   onPressed: () => ref
                       .read(audioServiceProvider)
-                      .playPraise(_audioPath!, widget.labelForPlayback),
+                      .playClip(_audioPath!, widget.labelForPlayback),
                   child: Text(l.playAudio),
                 ),
                 IconButton(

@@ -3808,17 +3808,6 @@ class $PraisesTable extends Praises with TableInfo<$PraisesTable, PraiseRow> {
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _audioPathMeta = const VerificationMeta(
-    'audioPath',
-  );
-  @override
-  late final GeneratedColumn<String> audioPath = GeneratedColumn<String>(
-    'audio_path',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
   @override
   late final GeneratedColumnWithTypeConverter<ContentSource, String> source =
       GeneratedColumn<String>(
@@ -3844,7 +3833,7 @@ class $PraisesTable extends Praises with TableInfo<$PraisesTable, PraiseRow> {
     defaultValue: const Constant(true),
   );
   @override
-  List<GeneratedColumn> get $columns => [id, label, audioPath, source, enabled];
+  List<GeneratedColumn> get $columns => [id, label, source, enabled];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -3870,14 +3859,6 @@ class $PraisesTable extends Praises with TableInfo<$PraisesTable, PraiseRow> {
     } else if (isInserting) {
       context.missing(_labelMeta);
     }
-    if (data.containsKey('audio_path')) {
-      context.handle(
-        _audioPathMeta,
-        audioPath.isAcceptableOrUnknown(data['audio_path']!, _audioPathMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_audioPathMeta);
-    }
     if (data.containsKey('enabled')) {
       context.handle(
         _enabledMeta,
@@ -3900,10 +3881,6 @@ class $PraisesTable extends Praises with TableInfo<$PraisesTable, PraiseRow> {
       label: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}label'],
-      )!,
-      audioPath: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}audio_path'],
       )!,
       source: $PraisesTable.$convertersource.fromSql(
         attachedDatabase.typeMapping.read(
@@ -3930,13 +3907,11 @@ class $PraisesTable extends Praises with TableInfo<$PraisesTable, PraiseRow> {
 class PraiseRow extends DataClass implements Insertable<PraiseRow> {
   final String id;
   final String label;
-  final String audioPath;
   final ContentSource source;
   final bool enabled;
   const PraiseRow({
     required this.id,
     required this.label,
-    required this.audioPath,
     required this.source,
     required this.enabled,
   });
@@ -3945,7 +3920,6 @@ class PraiseRow extends DataClass implements Insertable<PraiseRow> {
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
     map['label'] = Variable<String>(label);
-    map['audio_path'] = Variable<String>(audioPath);
     {
       map['source'] = Variable<String>(
         $PraisesTable.$convertersource.toSql(source),
@@ -3959,7 +3933,6 @@ class PraiseRow extends DataClass implements Insertable<PraiseRow> {
     return PraisesCompanion(
       id: Value(id),
       label: Value(label),
-      audioPath: Value(audioPath),
       source: Value(source),
       enabled: Value(enabled),
     );
@@ -3973,7 +3946,6 @@ class PraiseRow extends DataClass implements Insertable<PraiseRow> {
     return PraiseRow(
       id: serializer.fromJson<String>(json['id']),
       label: serializer.fromJson<String>(json['label']),
-      audioPath: serializer.fromJson<String>(json['audioPath']),
       source: $PraisesTable.$convertersource.fromJson(
         serializer.fromJson<String>(json['source']),
       ),
@@ -3986,7 +3958,6 @@ class PraiseRow extends DataClass implements Insertable<PraiseRow> {
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
       'label': serializer.toJson<String>(label),
-      'audioPath': serializer.toJson<String>(audioPath),
       'source': serializer.toJson<String>(
         $PraisesTable.$convertersource.toJson(source),
       ),
@@ -3997,13 +3968,11 @@ class PraiseRow extends DataClass implements Insertable<PraiseRow> {
   PraiseRow copyWith({
     String? id,
     String? label,
-    String? audioPath,
     ContentSource? source,
     bool? enabled,
   }) => PraiseRow(
     id: id ?? this.id,
     label: label ?? this.label,
-    audioPath: audioPath ?? this.audioPath,
     source: source ?? this.source,
     enabled: enabled ?? this.enabled,
   );
@@ -4011,7 +3980,6 @@ class PraiseRow extends DataClass implements Insertable<PraiseRow> {
     return PraiseRow(
       id: data.id.present ? data.id.value : this.id,
       label: data.label.present ? data.label.value : this.label,
-      audioPath: data.audioPath.present ? data.audioPath.value : this.audioPath,
       source: data.source.present ? data.source.value : this.source,
       enabled: data.enabled.present ? data.enabled.value : this.enabled,
     );
@@ -4022,7 +3990,6 @@ class PraiseRow extends DataClass implements Insertable<PraiseRow> {
     return (StringBuffer('PraiseRow(')
           ..write('id: $id, ')
           ..write('label: $label, ')
-          ..write('audioPath: $audioPath, ')
           ..write('source: $source, ')
           ..write('enabled: $enabled')
           ..write(')'))
@@ -4030,14 +3997,13 @@ class PraiseRow extends DataClass implements Insertable<PraiseRow> {
   }
 
   @override
-  int get hashCode => Object.hash(id, label, audioPath, source, enabled);
+  int get hashCode => Object.hash(id, label, source, enabled);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is PraiseRow &&
           other.id == this.id &&
           other.label == this.label &&
-          other.audioPath == this.audioPath &&
           other.source == this.source &&
           other.enabled == this.enabled);
 }
@@ -4045,14 +4011,12 @@ class PraiseRow extends DataClass implements Insertable<PraiseRow> {
 class PraisesCompanion extends UpdateCompanion<PraiseRow> {
   final Value<String> id;
   final Value<String> label;
-  final Value<String> audioPath;
   final Value<ContentSource> source;
   final Value<bool> enabled;
   final Value<int> rowid;
   const PraisesCompanion({
     this.id = const Value.absent(),
     this.label = const Value.absent(),
-    this.audioPath = const Value.absent(),
     this.source = const Value.absent(),
     this.enabled = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -4060,18 +4024,15 @@ class PraisesCompanion extends UpdateCompanion<PraiseRow> {
   PraisesCompanion.insert({
     required String id,
     required String label,
-    required String audioPath,
     required ContentSource source,
     this.enabled = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        label = Value(label),
-       audioPath = Value(audioPath),
        source = Value(source);
   static Insertable<PraiseRow> custom({
     Expression<String>? id,
     Expression<String>? label,
-    Expression<String>? audioPath,
     Expression<String>? source,
     Expression<bool>? enabled,
     Expression<int>? rowid,
@@ -4079,7 +4040,6 @@ class PraisesCompanion extends UpdateCompanion<PraiseRow> {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (label != null) 'label': label,
-      if (audioPath != null) 'audio_path': audioPath,
       if (source != null) 'source': source,
       if (enabled != null) 'enabled': enabled,
       if (rowid != null) 'rowid': rowid,
@@ -4089,7 +4049,6 @@ class PraisesCompanion extends UpdateCompanion<PraiseRow> {
   PraisesCompanion copyWith({
     Value<String>? id,
     Value<String>? label,
-    Value<String>? audioPath,
     Value<ContentSource>? source,
     Value<bool>? enabled,
     Value<int>? rowid,
@@ -4097,7 +4056,6 @@ class PraisesCompanion extends UpdateCompanion<PraiseRow> {
     return PraisesCompanion(
       id: id ?? this.id,
       label: label ?? this.label,
-      audioPath: audioPath ?? this.audioPath,
       source: source ?? this.source,
       enabled: enabled ?? this.enabled,
       rowid: rowid ?? this.rowid,
@@ -4112,9 +4070,6 @@ class PraisesCompanion extends UpdateCompanion<PraiseRow> {
     }
     if (label.present) {
       map['label'] = Variable<String>(label.value);
-    }
-    if (audioPath.present) {
-      map['audio_path'] = Variable<String>(audioPath.value);
     }
     if (source.present) {
       map['source'] = Variable<String>(
@@ -4135,9 +4090,533 @@ class PraisesCompanion extends UpdateCompanion<PraiseRow> {
     return (StringBuffer('PraisesCompanion(')
           ..write('id: $id, ')
           ..write('label: $label, ')
+          ..write('source: $source, ')
+          ..write('enabled: $enabled, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $SoundsTable extends Sounds with TableInfo<$SoundsTable, SoundRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $SoundsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  late final GeneratedColumnWithTypeConverter<SoundOwner, String> ownerType =
+      GeneratedColumn<String>(
+        'owner_type',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: true,
+      ).withConverter<SoundOwner>($SoundsTable.$converterownerType);
+  static const VerificationMeta _ownerIdMeta = const VerificationMeta(
+    'ownerId',
+  );
+  @override
+  late final GeneratedColumn<String> ownerId = GeneratedColumn<String>(
+    'owner_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _labelMeta = const VerificationMeta('label');
+  @override
+  late final GeneratedColumn<String> label = GeneratedColumn<String>(
+    'label',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _audioPathMeta = const VerificationMeta(
+    'audioPath',
+  );
+  @override
+  late final GeneratedColumn<String> audioPath = GeneratedColumn<String>(
+    'audio_path',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  late final GeneratedColumnWithTypeConverter<ContentSource, String> source =
+      GeneratedColumn<String>(
+        'source',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: true,
+      ).withConverter<ContentSource>($SoundsTable.$convertersource);
+  static const VerificationMeta _enabledMeta = const VerificationMeta(
+    'enabled',
+  );
+  @override
+  late final GeneratedColumn<bool> enabled = GeneratedColumn<bool>(
+    'enabled',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("enabled" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
+  static const VerificationMeta _orderIndexMeta = const VerificationMeta(
+    'orderIndex',
+  );
+  @override
+  late final GeneratedColumn<int> orderIndex = GeneratedColumn<int>(
+    'order_index',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    ownerType,
+    ownerId,
+    label,
+    audioPath,
+    source,
+    enabled,
+    orderIndex,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'sounds';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<SoundRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('owner_id')) {
+      context.handle(
+        _ownerIdMeta,
+        ownerId.isAcceptableOrUnknown(data['owner_id']!, _ownerIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_ownerIdMeta);
+    }
+    if (data.containsKey('label')) {
+      context.handle(
+        _labelMeta,
+        label.isAcceptableOrUnknown(data['label']!, _labelMeta),
+      );
+    }
+    if (data.containsKey('audio_path')) {
+      context.handle(
+        _audioPathMeta,
+        audioPath.isAcceptableOrUnknown(data['audio_path']!, _audioPathMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_audioPathMeta);
+    }
+    if (data.containsKey('enabled')) {
+      context.handle(
+        _enabledMeta,
+        enabled.isAcceptableOrUnknown(data['enabled']!, _enabledMeta),
+      );
+    }
+    if (data.containsKey('order_index')) {
+      context.handle(
+        _orderIndexMeta,
+        orderIndex.isAcceptableOrUnknown(data['order_index']!, _orderIndexMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  SoundRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return SoundRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      ownerType: $SoundsTable.$converterownerType.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}owner_type'],
+        )!,
+      ),
+      ownerId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}owner_id'],
+      )!,
+      label: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}label'],
+      ),
+      audioPath: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}audio_path'],
+      )!,
+      source: $SoundsTable.$convertersource.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}source'],
+        )!,
+      ),
+      enabled: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}enabled'],
+      )!,
+      orderIndex: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}order_index'],
+      )!,
+    );
+  }
+
+  @override
+  $SoundsTable createAlias(String alias) {
+    return $SoundsTable(attachedDatabase, alias);
+  }
+
+  static JsonTypeConverter2<SoundOwner, String, String> $converterownerType =
+      const EnumNameConverter<SoundOwner>(SoundOwner.values);
+  static JsonTypeConverter2<ContentSource, String, String> $convertersource =
+      const EnumNameConverter<ContentSource>(ContentSource.values);
+}
+
+class SoundRow extends DataClass implements Insertable<SoundRow> {
+  final String id;
+  final SoundOwner ownerType;
+  final String ownerId;
+
+  /// Human label for the voice (e.g. "أنثى (أردنية)"); null for parent recordings.
+  final String? label;
+
+  /// Bundled asset (`assets/…`), self-contained web clip (`data:…`), or a native
+  /// recorded/picked file path.
+  final String audioPath;
+  final ContentSource source;
+  final bool enabled;
+  final int orderIndex;
+  const SoundRow({
+    required this.id,
+    required this.ownerType,
+    required this.ownerId,
+    this.label,
+    required this.audioPath,
+    required this.source,
+    required this.enabled,
+    required this.orderIndex,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    {
+      map['owner_type'] = Variable<String>(
+        $SoundsTable.$converterownerType.toSql(ownerType),
+      );
+    }
+    map['owner_id'] = Variable<String>(ownerId);
+    if (!nullToAbsent || label != null) {
+      map['label'] = Variable<String>(label);
+    }
+    map['audio_path'] = Variable<String>(audioPath);
+    {
+      map['source'] = Variable<String>(
+        $SoundsTable.$convertersource.toSql(source),
+      );
+    }
+    map['enabled'] = Variable<bool>(enabled);
+    map['order_index'] = Variable<int>(orderIndex);
+    return map;
+  }
+
+  SoundsCompanion toCompanion(bool nullToAbsent) {
+    return SoundsCompanion(
+      id: Value(id),
+      ownerType: Value(ownerType),
+      ownerId: Value(ownerId),
+      label: label == null && nullToAbsent
+          ? const Value.absent()
+          : Value(label),
+      audioPath: Value(audioPath),
+      source: Value(source),
+      enabled: Value(enabled),
+      orderIndex: Value(orderIndex),
+    );
+  }
+
+  factory SoundRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return SoundRow(
+      id: serializer.fromJson<String>(json['id']),
+      ownerType: $SoundsTable.$converterownerType.fromJson(
+        serializer.fromJson<String>(json['ownerType']),
+      ),
+      ownerId: serializer.fromJson<String>(json['ownerId']),
+      label: serializer.fromJson<String?>(json['label']),
+      audioPath: serializer.fromJson<String>(json['audioPath']),
+      source: $SoundsTable.$convertersource.fromJson(
+        serializer.fromJson<String>(json['source']),
+      ),
+      enabled: serializer.fromJson<bool>(json['enabled']),
+      orderIndex: serializer.fromJson<int>(json['orderIndex']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'ownerType': serializer.toJson<String>(
+        $SoundsTable.$converterownerType.toJson(ownerType),
+      ),
+      'ownerId': serializer.toJson<String>(ownerId),
+      'label': serializer.toJson<String?>(label),
+      'audioPath': serializer.toJson<String>(audioPath),
+      'source': serializer.toJson<String>(
+        $SoundsTable.$convertersource.toJson(source),
+      ),
+      'enabled': serializer.toJson<bool>(enabled),
+      'orderIndex': serializer.toJson<int>(orderIndex),
+    };
+  }
+
+  SoundRow copyWith({
+    String? id,
+    SoundOwner? ownerType,
+    String? ownerId,
+    Value<String?> label = const Value.absent(),
+    String? audioPath,
+    ContentSource? source,
+    bool? enabled,
+    int? orderIndex,
+  }) => SoundRow(
+    id: id ?? this.id,
+    ownerType: ownerType ?? this.ownerType,
+    ownerId: ownerId ?? this.ownerId,
+    label: label.present ? label.value : this.label,
+    audioPath: audioPath ?? this.audioPath,
+    source: source ?? this.source,
+    enabled: enabled ?? this.enabled,
+    orderIndex: orderIndex ?? this.orderIndex,
+  );
+  SoundRow copyWithCompanion(SoundsCompanion data) {
+    return SoundRow(
+      id: data.id.present ? data.id.value : this.id,
+      ownerType: data.ownerType.present ? data.ownerType.value : this.ownerType,
+      ownerId: data.ownerId.present ? data.ownerId.value : this.ownerId,
+      label: data.label.present ? data.label.value : this.label,
+      audioPath: data.audioPath.present ? data.audioPath.value : this.audioPath,
+      source: data.source.present ? data.source.value : this.source,
+      enabled: data.enabled.present ? data.enabled.value : this.enabled,
+      orderIndex: data.orderIndex.present
+          ? data.orderIndex.value
+          : this.orderIndex,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SoundRow(')
+          ..write('id: $id, ')
+          ..write('ownerType: $ownerType, ')
+          ..write('ownerId: $ownerId, ')
+          ..write('label: $label, ')
           ..write('audioPath: $audioPath, ')
           ..write('source: $source, ')
           ..write('enabled: $enabled, ')
+          ..write('orderIndex: $orderIndex')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    ownerType,
+    ownerId,
+    label,
+    audioPath,
+    source,
+    enabled,
+    orderIndex,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is SoundRow &&
+          other.id == this.id &&
+          other.ownerType == this.ownerType &&
+          other.ownerId == this.ownerId &&
+          other.label == this.label &&
+          other.audioPath == this.audioPath &&
+          other.source == this.source &&
+          other.enabled == this.enabled &&
+          other.orderIndex == this.orderIndex);
+}
+
+class SoundsCompanion extends UpdateCompanion<SoundRow> {
+  final Value<String> id;
+  final Value<SoundOwner> ownerType;
+  final Value<String> ownerId;
+  final Value<String?> label;
+  final Value<String> audioPath;
+  final Value<ContentSource> source;
+  final Value<bool> enabled;
+  final Value<int> orderIndex;
+  final Value<int> rowid;
+  const SoundsCompanion({
+    this.id = const Value.absent(),
+    this.ownerType = const Value.absent(),
+    this.ownerId = const Value.absent(),
+    this.label = const Value.absent(),
+    this.audioPath = const Value.absent(),
+    this.source = const Value.absent(),
+    this.enabled = const Value.absent(),
+    this.orderIndex = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  SoundsCompanion.insert({
+    required String id,
+    required SoundOwner ownerType,
+    required String ownerId,
+    this.label = const Value.absent(),
+    required String audioPath,
+    required ContentSource source,
+    this.enabled = const Value.absent(),
+    this.orderIndex = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       ownerType = Value(ownerType),
+       ownerId = Value(ownerId),
+       audioPath = Value(audioPath),
+       source = Value(source);
+  static Insertable<SoundRow> custom({
+    Expression<String>? id,
+    Expression<String>? ownerType,
+    Expression<String>? ownerId,
+    Expression<String>? label,
+    Expression<String>? audioPath,
+    Expression<String>? source,
+    Expression<bool>? enabled,
+    Expression<int>? orderIndex,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (ownerType != null) 'owner_type': ownerType,
+      if (ownerId != null) 'owner_id': ownerId,
+      if (label != null) 'label': label,
+      if (audioPath != null) 'audio_path': audioPath,
+      if (source != null) 'source': source,
+      if (enabled != null) 'enabled': enabled,
+      if (orderIndex != null) 'order_index': orderIndex,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  SoundsCompanion copyWith({
+    Value<String>? id,
+    Value<SoundOwner>? ownerType,
+    Value<String>? ownerId,
+    Value<String?>? label,
+    Value<String>? audioPath,
+    Value<ContentSource>? source,
+    Value<bool>? enabled,
+    Value<int>? orderIndex,
+    Value<int>? rowid,
+  }) {
+    return SoundsCompanion(
+      id: id ?? this.id,
+      ownerType: ownerType ?? this.ownerType,
+      ownerId: ownerId ?? this.ownerId,
+      label: label ?? this.label,
+      audioPath: audioPath ?? this.audioPath,
+      source: source ?? this.source,
+      enabled: enabled ?? this.enabled,
+      orderIndex: orderIndex ?? this.orderIndex,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (ownerType.present) {
+      map['owner_type'] = Variable<String>(
+        $SoundsTable.$converterownerType.toSql(ownerType.value),
+      );
+    }
+    if (ownerId.present) {
+      map['owner_id'] = Variable<String>(ownerId.value);
+    }
+    if (label.present) {
+      map['label'] = Variable<String>(label.value);
+    }
+    if (audioPath.present) {
+      map['audio_path'] = Variable<String>(audioPath.value);
+    }
+    if (source.present) {
+      map['source'] = Variable<String>(
+        $SoundsTable.$convertersource.toSql(source.value),
+      );
+    }
+    if (enabled.present) {
+      map['enabled'] = Variable<bool>(enabled.value);
+    }
+    if (orderIndex.present) {
+      map['order_index'] = Variable<int>(orderIndex.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SoundsCompanion(')
+          ..write('id: $id, ')
+          ..write('ownerType: $ownerType, ')
+          ..write('ownerId: $ownerId, ')
+          ..write('label: $label, ')
+          ..write('audioPath: $audioPath, ')
+          ..write('source: $source, ')
+          ..write('enabled: $enabled, ')
+          ..write('orderIndex: $orderIndex, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -4156,6 +4635,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $TrialLogsTable trialLogs = $TrialLogsTable(this);
   late final $AppSettingsTable appSettings = $AppSettingsTable(this);
   late final $PraisesTable praises = $PraisesTable(this);
+  late final $SoundsTable sounds = $SoundsTable(this);
   late final Index idxExemplarItem = Index(
     'idx_exemplar_item',
     'CREATE INDEX idx_exemplar_item ON exemplars (item_id)',
@@ -4180,6 +4660,10 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     'idx_trial_session',
     'CREATE INDEX idx_trial_session ON trial_logs (session_id)',
   );
+  late final Index idxSoundOwner = Index(
+    'idx_sound_owner',
+    'CREATE INDEX idx_sound_owner ON sounds (owner_type, owner_id)',
+  );
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -4194,12 +4678,14 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     trialLogs,
     appSettings,
     praises,
+    sounds,
     idxExemplarItem,
     idxLsChildItem,
     idxLsDue,
     idxSessionChild,
     idxTrialChildTime,
     idxTrialSession,
+    idxSoundOwner,
   ];
 }
 
@@ -7782,7 +8268,6 @@ typedef $$PraisesTableCreateCompanionBuilder =
     PraisesCompanion Function({
       required String id,
       required String label,
-      required String audioPath,
       required ContentSource source,
       Value<bool> enabled,
       Value<int> rowid,
@@ -7791,7 +8276,6 @@ typedef $$PraisesTableUpdateCompanionBuilder =
     PraisesCompanion Function({
       Value<String> id,
       Value<String> label,
-      Value<String> audioPath,
       Value<ContentSource> source,
       Value<bool> enabled,
       Value<int> rowid,
@@ -7813,11 +8297,6 @@ class $$PraisesTableFilterComposer
 
   ColumnFilters<String> get label => $composableBuilder(
     column: $table.label,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get audioPath => $composableBuilder(
-    column: $table.audioPath,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -7852,11 +8331,6 @@ class $$PraisesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get audioPath => $composableBuilder(
-    column: $table.audioPath,
-    builder: (column) => ColumnOrderings(column),
-  );
-
   ColumnOrderings<String> get source => $composableBuilder(
     column: $table.source,
     builder: (column) => ColumnOrderings(column),
@@ -7882,9 +8356,6 @@ class $$PraisesTableAnnotationComposer
 
   GeneratedColumn<String> get label =>
       $composableBuilder(column: $table.label, builder: (column) => column);
-
-  GeneratedColumn<String> get audioPath =>
-      $composableBuilder(column: $table.audioPath, builder: (column) => column);
 
   GeneratedColumnWithTypeConverter<ContentSource, String> get source =>
       $composableBuilder(column: $table.source, builder: (column) => column);
@@ -7923,14 +8394,12 @@ class $$PraisesTableTableManager
               ({
                 Value<String> id = const Value.absent(),
                 Value<String> label = const Value.absent(),
-                Value<String> audioPath = const Value.absent(),
                 Value<ContentSource> source = const Value.absent(),
                 Value<bool> enabled = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => PraisesCompanion(
                 id: id,
                 label: label,
-                audioPath: audioPath,
                 source: source,
                 enabled: enabled,
                 rowid: rowid,
@@ -7939,14 +8408,12 @@ class $$PraisesTableTableManager
               ({
                 required String id,
                 required String label,
-                required String audioPath,
                 required ContentSource source,
                 Value<bool> enabled = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => PraisesCompanion.insert(
                 id: id,
                 label: label,
-                audioPath: audioPath,
                 source: source,
                 enabled: enabled,
                 rowid: rowid,
@@ -7973,6 +8440,261 @@ typedef $$PraisesTableProcessedTableManager =
       PraiseRow,
       PrefetchHooks Function()
     >;
+typedef $$SoundsTableCreateCompanionBuilder =
+    SoundsCompanion Function({
+      required String id,
+      required SoundOwner ownerType,
+      required String ownerId,
+      Value<String?> label,
+      required String audioPath,
+      required ContentSource source,
+      Value<bool> enabled,
+      Value<int> orderIndex,
+      Value<int> rowid,
+    });
+typedef $$SoundsTableUpdateCompanionBuilder =
+    SoundsCompanion Function({
+      Value<String> id,
+      Value<SoundOwner> ownerType,
+      Value<String> ownerId,
+      Value<String?> label,
+      Value<String> audioPath,
+      Value<ContentSource> source,
+      Value<bool> enabled,
+      Value<int> orderIndex,
+      Value<int> rowid,
+    });
+
+class $$SoundsTableFilterComposer
+    extends Composer<_$AppDatabase, $SoundsTable> {
+  $$SoundsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnWithTypeConverterFilters<SoundOwner, SoundOwner, String>
+  get ownerType => $composableBuilder(
+    column: $table.ownerType,
+    builder: (column) => ColumnWithTypeConverterFilters(column),
+  );
+
+  ColumnFilters<String> get ownerId => $composableBuilder(
+    column: $table.ownerId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get label => $composableBuilder(
+    column: $table.label,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get audioPath => $composableBuilder(
+    column: $table.audioPath,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnWithTypeConverterFilters<ContentSource, ContentSource, String>
+  get source => $composableBuilder(
+    column: $table.source,
+    builder: (column) => ColumnWithTypeConverterFilters(column),
+  );
+
+  ColumnFilters<bool> get enabled => $composableBuilder(
+    column: $table.enabled,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get orderIndex => $composableBuilder(
+    column: $table.orderIndex,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$SoundsTableOrderingComposer
+    extends Composer<_$AppDatabase, $SoundsTable> {
+  $$SoundsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get ownerType => $composableBuilder(
+    column: $table.ownerType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get ownerId => $composableBuilder(
+    column: $table.ownerId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get label => $composableBuilder(
+    column: $table.label,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get audioPath => $composableBuilder(
+    column: $table.audioPath,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get source => $composableBuilder(
+    column: $table.source,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get enabled => $composableBuilder(
+    column: $table.enabled,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get orderIndex => $composableBuilder(
+    column: $table.orderIndex,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$SoundsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $SoundsTable> {
+  $$SoundsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumnWithTypeConverter<SoundOwner, String> get ownerType =>
+      $composableBuilder(column: $table.ownerType, builder: (column) => column);
+
+  GeneratedColumn<String> get ownerId =>
+      $composableBuilder(column: $table.ownerId, builder: (column) => column);
+
+  GeneratedColumn<String> get label =>
+      $composableBuilder(column: $table.label, builder: (column) => column);
+
+  GeneratedColumn<String> get audioPath =>
+      $composableBuilder(column: $table.audioPath, builder: (column) => column);
+
+  GeneratedColumnWithTypeConverter<ContentSource, String> get source =>
+      $composableBuilder(column: $table.source, builder: (column) => column);
+
+  GeneratedColumn<bool> get enabled =>
+      $composableBuilder(column: $table.enabled, builder: (column) => column);
+
+  GeneratedColumn<int> get orderIndex => $composableBuilder(
+    column: $table.orderIndex,
+    builder: (column) => column,
+  );
+}
+
+class $$SoundsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $SoundsTable,
+          SoundRow,
+          $$SoundsTableFilterComposer,
+          $$SoundsTableOrderingComposer,
+          $$SoundsTableAnnotationComposer,
+          $$SoundsTableCreateCompanionBuilder,
+          $$SoundsTableUpdateCompanionBuilder,
+          (SoundRow, BaseReferences<_$AppDatabase, $SoundsTable, SoundRow>),
+          SoundRow,
+          PrefetchHooks Function()
+        > {
+  $$SoundsTableTableManager(_$AppDatabase db, $SoundsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$SoundsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$SoundsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$SoundsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<SoundOwner> ownerType = const Value.absent(),
+                Value<String> ownerId = const Value.absent(),
+                Value<String?> label = const Value.absent(),
+                Value<String> audioPath = const Value.absent(),
+                Value<ContentSource> source = const Value.absent(),
+                Value<bool> enabled = const Value.absent(),
+                Value<int> orderIndex = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => SoundsCompanion(
+                id: id,
+                ownerType: ownerType,
+                ownerId: ownerId,
+                label: label,
+                audioPath: audioPath,
+                source: source,
+                enabled: enabled,
+                orderIndex: orderIndex,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required SoundOwner ownerType,
+                required String ownerId,
+                Value<String?> label = const Value.absent(),
+                required String audioPath,
+                required ContentSource source,
+                Value<bool> enabled = const Value.absent(),
+                Value<int> orderIndex = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => SoundsCompanion.insert(
+                id: id,
+                ownerType: ownerType,
+                ownerId: ownerId,
+                label: label,
+                audioPath: audioPath,
+                source: source,
+                enabled: enabled,
+                orderIndex: orderIndex,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$SoundsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $SoundsTable,
+      SoundRow,
+      $$SoundsTableFilterComposer,
+      $$SoundsTableOrderingComposer,
+      $$SoundsTableAnnotationComposer,
+      $$SoundsTableCreateCompanionBuilder,
+      $$SoundsTableUpdateCompanionBuilder,
+      (SoundRow, BaseReferences<_$AppDatabase, $SoundsTable, SoundRow>),
+      SoundRow,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -7995,4 +8717,6 @@ class $AppDatabaseManager {
       $$AppSettingsTableTableManager(_db, _db.appSettings);
   $$PraisesTableTableManager get praises =>
       $$PraisesTableTableManager(_db, _db.praises);
+  $$SoundsTableTableManager get sounds =>
+      $$SoundsTableTableManager(_db, _db.sounds);
 }

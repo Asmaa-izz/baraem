@@ -1,4 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Recording parent voices for items and encouragement words. -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
     <application
         android:label="baraem"
         android:name="${applicationName}"

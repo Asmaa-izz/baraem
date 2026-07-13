@@ -21,3 +21,8 @@ enum ProfileMode {
 }
 
 enum ContentSource { system, user }
+
+/// What a [Sound] clip belongs to. `ownerId` in the Sounds table is an item id
+/// or a praise-word id depending on this. Polymorphic (no DB FK) so one table +
+/// one repository + one management UI serve both element and encouragement audio.
+enum SoundOwner { item, praise }

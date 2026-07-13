@@ -26,7 +26,6 @@ class Item {
     required this.categoryId,
     required this.source,
     this.speech,
-    this.audioPath,
     this.orderIndex = 0,
   });
 
@@ -37,9 +36,6 @@ class Item {
 
   /// Vocalized form for TTS; falls back to [label] when null.
   final String? speech;
-
-  /// Per-item audio (bundled asset or recorded file); null → use TTS.
-  final String? audioPath;
 
   /// Curated introduction order within the category (drives the active window).
   final int orderIndex;
@@ -186,20 +182,44 @@ class SessionInfo {
   final int correctCount;
 }
 
+/// An encouragement *word* (e.g. «شاطر»). Its voice clips live in [Sound]s.
 class Praise {
   const Praise({
     required this.id,
     required this.label,
-    required this.audioPath,
     required this.source,
     required this.enabled,
   });
 
   final String id;
   final String label;
-  final String audioPath; // asset (system) or file path (user)
   final ContentSource source;
   final bool enabled;
+}
+
+/// One voice clip for an item or praise word. Many can share an owner; a random
+/// enabled one is played. [audioPath] may be a bundled asset, a `data:` URI, or
+/// a native file path.
+class Sound {
+  const Sound({
+    required this.id,
+    required this.ownerType,
+    required this.ownerId,
+    required this.audioPath,
+    required this.source,
+    required this.enabled,
+    this.label,
+    this.orderIndex = 0,
+  });
+
+  final String id;
+  final SoundOwner ownerType;
+  final String ownerId;
+  final String? label;
+  final String audioPath;
+  final ContentSource source;
+  final bool enabled;
+  final int orderIndex;
 
   bool get isAsset => audioPath.startsWith('assets/');
 }

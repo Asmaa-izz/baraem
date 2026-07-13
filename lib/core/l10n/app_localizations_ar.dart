@@ -191,6 +191,27 @@ class AppLocalizationsAr extends AppLocalizations {
   String get addSound => 'أضف صوت';
 
   @override
+  String get manageVoices => 'الأصوات';
+
+  @override
+  String get manageVoicesHint =>
+      'يُختار صوت عشوائي عند النطق. أضف أو احذف كما تشاء.';
+
+  @override
+  String get noVoices => 'لا توجد أصوات بعد';
+
+  @override
+  String voicesCount(int count) {
+    return '$count أصوات';
+  }
+
+  @override
+  String get addPraiseWord => 'أضف كلمة';
+
+  @override
+  String get praiseWordName => 'الكلمة';
+
+  @override
   String get soundName => 'اسم الصوت';
 
   @override

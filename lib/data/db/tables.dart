@@ -136,16 +136,42 @@ class AppSettings extends Table {
   Set<Column> get primaryKey => {settingKey};
 }
 
-/// Encouragement clips played on a correct answer. Managed by the parent:
-/// [enabled] false is a soft delete (hidden from playback, restorable);
-/// [source] user rows are parent-recorded and removed on reset-to-defaults.
+/// Encouragement *words* played on a correct answer (e.g. «شاطر»). Each word
+/// owns one or more voice clips in [Sounds]; this table is just the word.
+/// [enabled] false is a soft delete (restorable); [source] user rows are
+/// parent-added and removed on reset-to-defaults.
 @DataClassName('PraiseRow')
 class Praises extends Table {
   TextColumn get id => text()();
   TextColumn get label => text()();
-  TextColumn get audioPath => text()(); // asset (system) or file path (user)
   TextColumn get source => textEnum<ContentSource>()();
   BoolColumn get enabled => boolean().withDefault(const Constant(true))();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+/// A single voice clip belonging to an item or a praise word (polymorphic via
+/// [ownerType]/[ownerId] — no DB FK). One item/word can have many clips; a
+/// random enabled one is picked at playback. Mirrors the [Praises] management
+/// pattern: [enabled] false soft-deletes system clips (restorable, survives
+/// re-seed); user clips are hard-deleted (row + file) instead.
+@DataClassName('SoundRow')
+@TableIndex(name: 'idx_sound_owner', columns: {#ownerType, #ownerId})
+class Sounds extends Table {
+  TextColumn get id => text()();
+  TextColumn get ownerType => textEnum<SoundOwner>()();
+  TextColumn get ownerId => text()();
+
+  /// Human label for the voice (e.g. "أنثى (أردنية)"); null for parent recordings.
+  TextColumn get label => text().nullable()();
+
+  /// Bundled asset (`assets/…`), self-contained web clip (`data:…`), or a native
+  /// recorded/picked file path.
+  TextColumn get audioPath => text()();
+  TextColumn get source => textEnum<ContentSource>()();
+  BoolColumn get enabled => boolean().withDefault(const Constant(true))();
+  IntColumn get orderIndex => integer().withDefault(const Constant(0))();
 
   @override
   Set<Column> get primaryKey => {id};

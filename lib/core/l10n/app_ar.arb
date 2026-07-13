@@ -85,6 +85,17 @@
   "praiseSounds": "أصوات التشجيع",
   "praiseSoundsHint": "تُسمع عند الإجابة الصحيحة",
   "addSound": "أضف صوت",
+  "manageVoices": "الأصوات",
+  "manageVoicesHint": "يُختار صوت عشوائي عند النطق. أضف أو احذف كما تشاء.",
+  "noVoices": "لا توجد أصوات بعد",
+  "voicesCount": "{count} أصوات",
+  "@voicesCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "addPraiseWord": "أضف كلمة",
+  "praiseWordName": "الكلمة",
   "soundName": "اسم الصوت",
   "pickAudioFile": "اختر ملف صوت",
   "orRecord": "أو سجّل بصوتك",

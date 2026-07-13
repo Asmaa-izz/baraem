@@ -55,21 +55,26 @@ def build_jobs(spec):
 
 
 def build_praise_jobs(spec):
-    """كلمات تشجيع تُنطق عند الإجابة الصحيحة، بالصوت الافتراضي (أول صوت)."""
+    """كلمات تشجيع تُنطق عند الإجابة الصحيحة، بكل صوت (أنثى/ذكر...).
+
+    المخرج مسطّح: praise/<id>_<voice_id>.mp3 كي يبقى ضمن مجلد praise/ المعلن
+    مرة واحدة في pubspec.
+    """
     praises = spec.get("praises", [])
     if not praises:
         return []
-    default_voice = spec["voices"][0]["voice"]
+    voices = spec["voices"]
     jobs = []
     for praise in praises:
         speech = praise.get("speech", praise["label"])
-        out_path = CONTENT_DIR / "praise" / f'{praise["id"]}.mp3'
-        jobs.append({
-            "label": f'praise/{praise["id"]} ("{speech}")',
-            "text": speech,
-            "voice": default_voice,
-            "out_path": out_path,
-        })
+        for voice in voices:
+            out_path = CONTENT_DIR / "praise" / f'{praise["id"]}_{voice["id"]}.mp3'
+            jobs.append({
+                "label": f'praise/{praise["id"]}_{voice["id"]} ("{speech}")',
+                "text": speech,
+                "voice": voice["voice"],
+                "out_path": out_path,
+            })
     return jobs
 
 

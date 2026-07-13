@@ -20,7 +20,6 @@ extension ItemRowMapper on ItemRow {
         categoryId: categoryId,
         source: source,
         speech: speech,
-        audioPath: audioPath,
         orderIndex: orderIndex,
       );
 }
@@ -70,9 +69,21 @@ extension PraiseRowMapper on PraiseRow {
   Praise toDomain() => Praise(
         id: id,
         label: label,
+        source: source,
+        enabled: enabled,
+      );
+}
+
+extension SoundRowMapper on SoundRow {
+  Sound toDomain() => Sound(
+        id: id,
+        ownerType: ownerType,
+        ownerId: ownerId,
+        label: label,
         audioPath: audioPath,
         source: source,
         enabled: enabled,
+        orderIndex: orderIndex,
       );
 }
 

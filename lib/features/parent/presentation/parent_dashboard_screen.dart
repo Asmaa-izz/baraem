@@ -11,11 +11,11 @@ import '../../../core/theme/context_ext.dart';
 import '../../../core/utils/arabic_numbers.dart';
 import '../../../core/widgets/app_button.dart';
 import '../../../core/widgets/app_card.dart';
-import '../../../core/widgets/audio_picker_field.dart';
 import '../../../data/models/domain.dart';
 import '../../../data/models/enums.dart';
 import '../../../data/models/reports.dart';
 import '../../profiles/presentation/profile_create_sheet.dart';
+import 'sound_list_sheet.dart';
 
 /// S7 — parent dashboard: reports, content, settings, profiles.
 class ParentDashboardScreen extends ConsumerWidget {
@@ -223,9 +223,7 @@ class _ContentTab extends ConsumerStatefulWidget {
 }
 
 class _ContentTabState extends ConsumerState<_ContentTab> {
-  late Future<List<(Category, List<Item>)>> _future = _load();
-
-  void _reload() => setState(() => _future = _load());
+  late final Future<List<(Category, List<Item>)>> _future = _load();
 
   @override
   Widget build(BuildContext context) {
@@ -251,18 +249,20 @@ class _ContentTabState extends ConsumerState<_ContentTab> {
                       children: [
                         for (final item in items)
                           ListTile(
-                            onTap: () => _editItemAudio(item),
-                            leading: item.audioPath != null
-                                ? IconButton(
-                                    icon: Icon(Icons.play_circle_outline_rounded,
-                                        color: context.colors.sky),
-                                    tooltip: l.playAudio,
-                                    onPressed: () => ref
-                                        .read(audioServiceProvider)
-                                        .playItem(item),
-                                  )
-                                : Icon(Icons.mic_none_rounded,
-                                    color: context.colors.ink2),
+                            onTap: () => showSoundListSheet(
+                              context,
+                              ownerType: SoundOwner.item,
+                              ownerId: item.id,
+                              title: item.label,
+                              fallbackLabel: item.spoken,
+                            ),
+                            leading: IconButton(
+                              icon: Icon(Icons.play_circle_outline_rounded,
+                                  color: context.colors.sky),
+                              tooltip: l.playAudio,
+                              onPressed: () =>
+                                  ref.read(audioServiceProvider).playItem(item),
+                            ),
                             title: Text(item.label),
                             trailing: item.source == ContentSource.user
                                 ? Icon(Icons.person_outline,
@@ -292,80 +292,12 @@ class _ContentTabState extends ConsumerState<_ContentTab> {
     );
   }
 
-  Future<void> _editItemAudio(Item item) async {
-    final changed = await showModalBottomSheet<bool>(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: context.colors.ground,
-      showDragHandle: true,
-      builder: (_) => _ItemAudioSheet(item: item),
-    );
-    if (changed == true) _reload();
-  }
-
   Future<List<(Category, List<Item>)>> _load() async {
     final content = ref.read(contentRepositoryProvider);
     final cats = await content.getCategories();
     return [
       for (final c in cats) (c, await content.getItemsByCategory(c.id)),
     ];
-  }
-}
-
-/// Add, replace, or remove the audio clip for a single word (system or user).
-class _ItemAudioSheet extends ConsumerStatefulWidget {
-  const _ItemAudioSheet({required this.item});
-  final Item item;
-
-  @override
-  ConsumerState<_ItemAudioSheet> createState() => _ItemAudioSheetState();
-}
-
-class _ItemAudioSheetState extends ConsumerState<_ItemAudioSheet> {
-  late String? _audioPath = widget.item.audioPath;
-  bool _saving = false;
-
-  Future<void> _save() async {
-    setState(() => _saving = true);
-    await ref
-        .read(contentRepositoryProvider)
-        .updateItemAudio(widget.item.id, _audioPath);
-    if (mounted) Navigator.of(context).pop(true);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final l = AppLocalizations.of(context);
-    final bottomInset = MediaQuery.of(context).viewInsets.bottom;
-
-    return Padding(
-      padding: EdgeInsets.fromLTRB(
-        BaraemSpace.lg,
-        BaraemSpace.sm,
-        BaraemSpace.lg,
-        BaraemSpace.lg + bottomInset,
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text(l.editItemAudio, style: context.texts.titleLarge),
-          const SizedBox(height: BaraemSpace.xs),
-          Text(widget.item.label, style: context.texts.bodyLarge),
-          const SizedBox(height: BaraemSpace.lg),
-          AudioPickerField(
-            initialPath: widget.item.audioPath,
-            labelForPlayback: widget.item.spoken,
-            onChanged: (path) => setState(() => _audioPath = path),
-          ),
-          const SizedBox(height: BaraemSpace.xl),
-          AppButton.primary(
-            label: l.save,
-            onPressed: _saving ? null : _save,
-          ),
-        ],
-      ),
-    );
   }
 }
 
