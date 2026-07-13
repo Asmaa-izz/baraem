@@ -34,6 +34,15 @@ void main() {
             .get();
     expect(spoonExemplars, isNotEmpty);
 
+    // `sections` (الجزء — cut-open views) become extra exemplars numbered after
+    // the regular images, and flip `hasImage` on once the bundled file exists.
+    final watermelonSection = await (db.select(db.exemplars)
+          ..where((e) => e.id.equals('fruits_watermelon_6')))
+        .getSingleOrNull();
+    expect(watermelonSection, isNotNull);
+    expect(watermelonSection!.orderIndex, 6);
+    expect(watermelonSection.hasImage, isTrue);
+
     // Re-running is idempotent (no duplicates).
     await ContentSeeder(db).ensureSeeded();
     expect((await db.select(db.items).get()).length, items.length);

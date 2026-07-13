@@ -15,7 +15,7 @@ class ContentSeeder {
   final AppDatabase db;
   final AssetBundle bundle;
 
-  static const int seedVersion = 3;
+  static const int seedVersion = 4;
   static const String _seedKey = 'seed_version';
 
   /// Default system voice (see `voices` in content.json).
@@ -24,6 +24,12 @@ class ContentSeeder {
   Future<void> ensureSeeded() async {
     final raw = await bundle.loadString('assets/content/content.json');
     final spec = jsonDecode(raw) as Map<String, dynamic>;
+
+    // Regular images occupy 1..styleCount (one per art style). Section images
+    // ("الجزء" — cut-open views) are numbered after them; this base must match
+    // `len(styles)` in tools/generate_content_images.py so files and exemplars
+    // line up.
+    final styleCount = (spec['styles'] as List?)?.length ?? 5;
 
     // Which of the declared assets actually shipped in this build. If the
     // manifest can't be read, degrade gracefully (emoji + TTS fallback).
@@ -72,8 +78,14 @@ class ContentSeeder {
           // `subjects` is the current key; fall back to legacy `exemplars`.
           final subjects =
               (item['subjects'] ?? item['exemplars'] ?? const []) as List;
-          for (var i = 0; i < subjects.length; i++) {
-            final n = i + 1;
+          // `sections` (optional) = cut-open "الجزء" views, generated after the
+          // regular images. Both become exemplars in the same rotation pool.
+          final sections = (item['sections'] ?? const []) as List;
+          final imageNames = <int>[
+            for (var i = 0; i < subjects.length; i++) i + 1,
+            for (var i = 0; i < sections.length; i++) styleCount + i + 1,
+          ];
+          for (final n in imageNames) {
             final path = 'assets/content/$catId/$itemId/$n.jpg';
             await db.into(db.exemplars).insertOnConflictUpdate(
                   ExemplarsCompanion.insert(

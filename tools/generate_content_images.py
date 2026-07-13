@@ -30,6 +30,13 @@ import zlib
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
+# على ويندوز الطرفية الافتراضية cp1252 فتفشل طباعة العربية؛ نفرض UTF-8.
+for _stream in (sys.stdout, sys.stderr):
+    try:
+        _stream.reconfigure(encoding="utf-8")
+    except (AttributeError, ValueError):
+        pass
+
 CONTENT_DIR = Path(__file__).resolve().parent.parent / "assets" / "content"
 CONTENT_JSON = CONTENT_DIR / "content.json"
 BASE_URL = "https://image.pollinations.ai/prompt/"
@@ -56,32 +63,49 @@ def build_jobs(spec, salt=0):
 
     كل عنصر يُولَّد بكل ستايل من spec["styles"]؛ الستايل رقم i يُقرَن بالجسم
     subjects[i] (بتدوير إن كانت القائمة أقصر) فيتنوّع الجسم والخلفية واللون
-    والزاوية والإضاءة معاً. الملف يُسمّى {i}-{styleId}.jpg.
+    والزاوية والإضاءة معاً. الملف يُسمّى {i}.jpg.
+
+    إضافةً لذلك، إن كان للعنصر قائمة "sections" (صور «الجزء»: الفاكهة/الخضار
+    مقطوعة تُظهر الداخل مع بقاء الملامح واضحة) تُولَّد صورة لكل عنصر منها بعد
+    الصور العادية، مرقّمة {len(styles)+j}.jpg، مقرونةً بالستايلات بالتناوب
+    ومستخدمةً قيد spec["sectionCommon"] بدل "common". يجب أن يطابق هذا الترقيم
+    مضاهيه في content_seeder.dart (الأجزاء تبدأ بعد عدد الستايلات).
 
     الـseed مشتق من البرومبت (فالنتيجة ثابتة)؛ يضيف salt لتغيير النتيجة عند
     إعادة توليد صورة معيبة (نفس البرومبت + salt مختلف = صورة مختلفة).
     """
     styles = spec["styles"]
     common = spec.get("common", "")
+    section_common = spec.get("sectionCommon", common)
     size = spec.get("imageSize", 768)
     jobs = []
+
+    def add_job(category, item, index, subject, style, constraint):
+        parts = [subject, style["prompt"]]
+        if constraint:
+            parts.append(constraint)
+        prompt = ", ".join(parts)
+        out_path = CONTENT_DIR / category["id"] / item["id"] / f'{index}.jpg'
+        jobs.append({
+            "label": f'{category["id"]}/{item["id"]}/{index} ({style["id"]}, {item["label"]}: {subject})',
+            "prompt": prompt,
+            "seed": (zlib.crc32(prompt.encode("utf-8")) + salt) % 100000,
+            "size": size,
+            "out_path": out_path,
+        })
+
     for category in spec["categories"]:
         for item in category["items"]:
             subjects = item["subjects"]
             for index, style in enumerate(styles, start=1):
                 subject = subjects[(index - 1) % len(subjects)]
-                parts = [subject, style["prompt"]]
-                if common:
-                    parts.append(common)
-                prompt = ", ".join(parts)
-                out_path = CONTENT_DIR / category["id"] / item["id"] / f'{index}.jpg'
-                jobs.append({
-                    "label": f'{category["id"]}/{item["id"]}/{index} ({style["id"]}, {item["label"]}: {subject})',
-                    "prompt": prompt,
-                    "seed": (zlib.crc32(prompt.encode("utf-8")) + salt) % 100000,
-                    "size": size,
-                    "out_path": out_path,
-                })
+                add_job(category, item, index, subject, style, common)
+
+            # صور «الجزء» (اختيارية): تبدأ أرقامها بعد الصور العادية مباشرةً.
+            for offset, section in enumerate(item.get("sections", [])):
+                index = len(styles) + offset + 1
+                style = styles[offset % len(styles)]
+                add_job(category, item, index, section, style, section_common)
     return jobs
 
 
