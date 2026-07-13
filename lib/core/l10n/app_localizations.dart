@@ -442,6 +442,24 @@ abstract class AppLocalizations {
   /// **'أو سجّل بصوتك'**
   String get orRecord;
 
+  /// No description provided for @audioReady.
+  ///
+  /// In ar, this message translates to:
+  /// **'جاهز'**
+  String get audioReady;
+
+  /// No description provided for @removeAudio.
+  ///
+  /// In ar, this message translates to:
+  /// **'إزالة الصوت'**
+  String get removeAudio;
+
+  /// No description provided for @editItemAudio.
+  ///
+  /// In ar, this message translates to:
+  /// **'صوت الكلمة'**
+  String get editItemAudio;
+
   /// No description provided for @restore.
   ///
   /// In ar, this message translates to:

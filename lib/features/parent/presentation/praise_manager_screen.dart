@@ -1,19 +1,14 @@
-import 'dart:convert';
-
-import 'package:file_picker/file_picker.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:record/record.dart';
 
 import '../../../app/providers.dart';
 import '../../../core/audio/audio_service.dart';
 import '../../../core/l10n/app_localizations.dart';
 import '../../../core/theme/baraem_tokens.dart';
 import '../../../core/theme/context_ext.dart';
-import '../../../core/utils/media_store.dart';
 import '../../../core/widgets/app_button.dart';
+import '../../../core/widgets/audio_picker_field.dart';
 import '../../../data/models/domain.dart';
 import '../../../data/models/enums.dart';
 
@@ -128,70 +123,13 @@ class _AddPraiseSheet extends ConsumerStatefulWidget {
 
 class _AddPraiseSheetState extends ConsumerState<_AddPraiseSheet> {
   final _name = TextEditingController();
-  final _recorder = AudioRecorder();
   String? _audioPath;
-  bool _recording = false;
   bool _saving = false;
 
   @override
   void dispose() {
     _name.dispose();
-    _recorder.dispose();
     super.dispose();
-  }
-
-  Future<void> _toggleRecording() async {
-    if (_recording) {
-      final path = await _recorder.stop();
-      setState(() {
-        _recording = false;
-        _audioPath = path;
-      });
-    } else {
-      if (!await _recorder.hasPermission()) return;
-      final path = await newMediaPath('.m4a');
-      await _recorder.start(const RecordConfig(), path: path);
-      setState(() => _recording = true);
-    }
-  }
-
-  /// Pick an audio file. On web it's stored as a self-contained data URI (so it
-  /// persists); on mobile it's copied into the app's media directory.
-  Future<void> _pickFile() async {
-    final result =
-        await FilePicker.pickFiles(type: FileType.audio, withData: kIsWeb);
-    if (result == null || result.files.isEmpty) return;
-    final file = result.files.first;
-    String? audioPath;
-    if (kIsWeb) {
-      final bytes = file.bytes;
-      if (bytes == null) return;
-      audioPath = 'data:${_mimeFor(file.extension)};base64,${base64Encode(bytes)}';
-    } else {
-      final path = file.path;
-      if (path == null) return;
-      audioPath = await persistExternalFile(path, '.${file.extension ?? 'm4a'}');
-    }
-    if (mounted) setState(() => _audioPath = audioPath);
-  }
-
-  String _mimeFor(String? ext) {
-    switch ((ext ?? '').toLowerCase()) {
-      case 'mp3':
-        return 'audio/mpeg';
-      case 'm4a':
-      case 'mp4':
-      case 'aac':
-        return 'audio/mp4';
-      case 'wav':
-        return 'audio/wav';
-      case 'ogg':
-        return 'audio/ogg';
-      case 'webm':
-        return 'audio/webm';
-      default:
-        return 'audio/mpeg';
-    }
   }
 
   bool get _canSave =>
@@ -209,7 +147,6 @@ class _AddPraiseSheetState extends ConsumerState<_AddPraiseSheet> {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
-    final colors = context.colors;
     final bottomInset = MediaQuery.of(context).viewInsets.bottom;
 
     return Padding(
@@ -232,42 +169,10 @@ class _AddPraiseSheetState extends ConsumerState<_AddPraiseSheet> {
             onChanged: (_) => setState(() {}),
           ),
           const SizedBox(height: BaraemSpace.lg),
-          // Choose an audio file — works on web and mobile.
-          AppButton(
-            label: l.pickAudioFile,
-            variant: AppButtonVariant.secondary,
-            leadingIcon: Icons.audiotrack_rounded,
-            onPressed: _pickFile,
+          AudioPickerField(
+            labelForPlayback: _name.text.trim(),
+            onChanged: (path) => setState(() => _audioPath = path),
           ),
-          // Record with the mic — mobile only.
-          if (!kIsWeb) ...[
-            const SizedBox(height: BaraemSpace.sm),
-            AppButton(
-              label: _recording ? l.stopRecording : l.orRecord,
-              variant: AppButtonVariant.secondary,
-              leadingIcon:
-                  _recording ? Icons.stop_rounded : Icons.mic_none_rounded,
-              onPressed: _toggleRecording,
-            ),
-          ],
-          if (_audioPath != null && !_recording)
-            Padding(
-              padding: const EdgeInsets.only(top: BaraemSpace.md),
-              child: Row(
-                children: [
-                  Icon(Icons.check_circle, color: colors.sage, size: 20),
-                  const SizedBox(width: BaraemSpace.xs),
-                  Text('جاهز', style: context.texts.bodyMedium),
-                  const Spacer(),
-                  TextButton(
-                    onPressed: () => ref
-                        .read(audioServiceProvider)
-                        .playPraise(_audioPath!, _name.text.trim()),
-                    child: Text(l.playAudio),
-                  ),
-                ],
-              ),
-            ),
           const SizedBox(height: BaraemSpace.xl),
           AppButton.primary(label: l.save, onPressed: _canSave ? _save : null),
         ],

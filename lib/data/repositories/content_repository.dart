@@ -23,6 +23,10 @@ abstract class ContentRepository {
   // Parent authoring (PRD §10).
   Future<Category> createUserCategory({required String name, required String icon});
   Future<Item> createUserItem({required String categoryId, required String label});
+
+  /// Set (or clear, when null) the audio clip for any word — system or user.
+  /// Played in place of TTS for that item.
+  Future<void> updateItemAudio(String itemId, String? audioPath);
   Future<Exemplar> createUserExemplar({
     required String itemId,
     required String imagePath,
@@ -136,6 +140,12 @@ class DriftContentRepository implements ContentRepository {
           ),
         );
     return (await getItem(id))!;
+  }
+
+  @override
+  Future<void> updateItemAudio(String itemId, String? audioPath) async {
+    await (db.update(db.items)..where((i) => i.id.equals(itemId)))
+        .write(ItemsCompanion(audioPath: Value(audioPath)));
   }
 
   @override

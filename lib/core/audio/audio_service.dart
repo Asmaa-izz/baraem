@@ -79,8 +79,20 @@ class AudioService {
       } catch (_) {/* fall through */}
     }
 
+    // Self-contained base64 clip (web-uploaded audio).
+    if (audio != null && audio.startsWith('data:')) {
+      try {
+        await _player.stop();
+        await _player.setUrl(audio);
+        await _player.play();
+        return;
+      } catch (_) {/* fall through */}
+    }
+
     // Recorded file audio (user content, native only).
-    final file = (audio != null && !audio.startsWith('assets/'))
+    final file = (audio != null &&
+            !audio.startsWith('assets/') &&
+            !audio.startsWith('data:'))
         ? audio
         : exemplar?.audioPath;
     if (file != null && file.isNotEmpty && !kIsWeb) {

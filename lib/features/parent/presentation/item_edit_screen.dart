@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:record/record.dart';
 
 import '../../../app/providers.dart';
 import '../../../core/l10n/app_localizations.dart';
@@ -14,6 +13,7 @@ import '../../../core/utils/platform_image_stub.dart'
     if (dart.library.io) '../../../core/utils/platform_image_io.dart';
 import '../../../core/widgets/app_button.dart';
 import '../../../core/widgets/app_card.dart';
+import '../../../core/widgets/audio_picker_field.dart';
 import '../../../data/models/domain.dart';
 
 /// S8 — add a parent-authored item (image + optional recorded audio + label +
@@ -27,17 +27,14 @@ class ItemEditScreen extends ConsumerStatefulWidget {
 
 class _ItemEditScreenState extends ConsumerState<ItemEditScreen> {
   final _label = TextEditingController();
-  final _recorder = AudioRecorder();
   String? _categoryId;
   String? _imagePath;
   String? _audioPath;
-  bool _recording = false;
   bool _saving = false;
 
   @override
   void dispose() {
     _label.dispose();
-    _recorder.dispose();
     super.dispose();
   }
 
@@ -47,21 +44,6 @@ class _ItemEditScreenState extends ConsumerState<ItemEditScreen> {
     if (file == null) return;
     final path = await persistExternalFile(file.path, '.jpg');
     setState(() => _imagePath = path);
-  }
-
-  Future<void> _toggleRecording() async {
-    if (_recording) {
-      final path = await _recorder.stop();
-      setState(() {
-        _recording = false;
-        _audioPath = path;
-      });
-    } else {
-      if (!await _recorder.hasPermission()) return;
-      final path = await newMediaPath('.m4a');
-      await _recorder.start(const RecordConfig(), path: path);
-      setState(() => _recording = true);
-    }
   }
 
   bool get _canSave =>
@@ -163,19 +145,10 @@ class _ItemEditScreenState extends ConsumerState<ItemEditScreen> {
                 onChanged: (v) => setState(() => _categoryId = v),
               ),
               const SizedBox(height: BaraemSpace.md),
-              if (!kIsWeb)
-                AppButton(
-                  label: _recording ? l.stopRecording : l.recordAudio,
-                  variant: AppButtonVariant.secondary,
-                  leadingIcon: _recording ? Icons.stop : Icons.mic_none_outlined,
-                  onPressed: _toggleRecording,
-                ),
-              if (_audioPath != null)
-                Padding(
-                  padding: const EdgeInsets.only(top: BaraemSpace.sm),
-                  child: Text('🎧 ${l.playAudio}',
-                      style: context.texts.bodyMedium),
-                ),
+              AudioPickerField(
+                labelForPlayback: _label.text.trim(),
+                onChanged: (path) => setState(() => _audioPath = path),
+              ),
               const SizedBox(height: BaraemSpace.xl),
               AppButton.primary(
                 label: l.save,

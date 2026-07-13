@@ -200,6 +200,15 @@ class AppLocalizationsAr extends AppLocalizations {
   String get orRecord => 'أو سجّل بصوتك';
 
   @override
+  String get audioReady => 'جاهز';
+
+  @override
+  String get removeAudio => 'إزالة الصوت';
+
+  @override
+  String get editItemAudio => 'صوت الكلمة';
+
+  @override
   String get restore => 'استرجاع';
 
   @override
