@@ -159,16 +159,23 @@ flutter:
     - assets/content/fruits/cherry/
     - assets/content/fruits/cherry/audio/
     - assets/content/clothes/shirt/
+    - assets/content/clothes/shirt/audio/
     - assets/content/clothes/pants/
+    - assets/content/clothes/pants/audio/
     - assets/content/clothes/hat/
     - assets/content/clothes/hat/audio/
     - assets/content/clothes/socks/
+    - assets/content/clothes/socks/audio/
     - assets/content/clothes/shoes/
     - assets/content/clothes/shoes/audio/
     - assets/content/clothes/dress/
+    - assets/content/clothes/dress/audio/
     - assets/content/clothes/jacket/
+    - assets/content/clothes/jacket/audio/
     - assets/content/clothes/sweater/
+    - assets/content/clothes/sweater/audio/
     - assets/content/clothes/gloves/
+    - assets/content/clothes/gloves/audio/
     - assets/content/clothes/scarf/
     - assets/content/clothes/scarf/audio/
   fonts:
