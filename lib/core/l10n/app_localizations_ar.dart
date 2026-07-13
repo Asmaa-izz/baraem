@@ -179,6 +179,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get settingsActiveWindow => 'عدد الكلمات النشطة';
 
   @override
+  String get settingsRounds => 'عدد الدورات';
+
+  @override
   String get settingsMute => 'كتم الصوت';
 
   @override

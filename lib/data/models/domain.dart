@@ -77,6 +77,7 @@ class ChildProfile {
     required this.sessionLength,
     required this.activeWindowSize,
     required this.masteryThreshold,
+    this.rounds = 1,
   });
 
   final String id;
@@ -88,6 +89,10 @@ class ChildProfile {
   final int activeWindowSize;
   final int masteryThreshold;
 
+  /// Learn-mode repeat factor: each active-window item is shown this many times
+  /// per browse session (screens = window size × rounds).
+  final int rounds;
+
   ChildProfile copyWith({
     String? name,
     String? avatar,
@@ -96,6 +101,7 @@ class ChildProfile {
     int? sessionLength,
     int? activeWindowSize,
     int? masteryThreshold,
+    int? rounds,
   }) {
     return ChildProfile(
       id: id,
@@ -106,6 +112,7 @@ class ChildProfile {
       sessionLength: sessionLength ?? this.sessionLength,
       activeWindowSize: activeWindowSize ?? this.activeWindowSize,
       masteryThreshold: masteryThreshold ?? this.masteryThreshold,
+      rounds: rounds ?? this.rounds,
     );
   }
 }

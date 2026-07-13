@@ -77,6 +77,7 @@ class DriftProfileRepository implements ProfileRepository {
         sessionLength: Value(p.sessionLength),
         activeWindowSize: Value(p.activeWindowSize),
         masteryThreshold: Value(p.masteryThreshold),
+        rounds: Value(p.rounds),
       ),
     );
   }

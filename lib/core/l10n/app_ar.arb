@@ -81,6 +81,7 @@
   "settingsChoices": "عدد خيارات الاختبار",
   "settingsSessionLength": "طول الجلسة",
   "settingsActiveWindow": "عدد الكلمات النشطة",
+  "settingsRounds": "عدد الدورات",
   "settingsMute": "كتم الصوت",
   "praiseSounds": "أصوات التشجيع",
   "praiseSoundsHint": "تُسمع عند الإجابة الصحيحة",

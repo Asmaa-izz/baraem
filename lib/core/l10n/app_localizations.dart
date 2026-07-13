@@ -400,6 +400,12 @@ abstract class AppLocalizations {
   /// **'عدد الكلمات النشطة'**
   String get settingsActiveWindow;
 
+  /// No description provided for @settingsRounds.
+  ///
+  /// In ar, this message translates to:
+  /// **'عدد الدورات'**
+  String get settingsRounds;
+
   /// No description provided for @settingsMute.
   ///
   /// In ar, this message translates to:

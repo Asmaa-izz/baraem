@@ -158,6 +158,19 @@ flutter:
     - assets/content/fruits/peach/audio/
     - assets/content/fruits/cherry/
     - assets/content/fruits/cherry/audio/
+    - assets/content/clothes/shirt/
+    - assets/content/clothes/pants/
+    - assets/content/clothes/hat/
+    - assets/content/clothes/hat/audio/
+    - assets/content/clothes/socks/
+    - assets/content/clothes/shoes/
+    - assets/content/clothes/shoes/audio/
+    - assets/content/clothes/dress/
+    - assets/content/clothes/jacket/
+    - assets/content/clothes/sweater/
+    - assets/content/clothes/gloves/
+    - assets/content/clothes/scarf/
+    - assets/content/clothes/scarf/audio/
   fonts:
     # Display / the word the child sees — rounded, friendly (variable weight axis)
     - family: Baloo Bhaijaan 2

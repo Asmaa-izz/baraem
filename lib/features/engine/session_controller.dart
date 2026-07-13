@@ -103,6 +103,9 @@ class SessionController extends _$SessionController {
   // learn-mode browse queue
   List<Item> _learnItems = [];
   final Map<String, List<Exemplar>> _exemplarsByItem = {};
+  // Last exemplar shown per item, so a word's repeated appearances (rounds > 1)
+  // prefer a different image each time.
+  final Map<String, String> _lastExemplarByItem = {};
 
   int _index = 0;
   int _sessionCorrect = 0;
@@ -159,8 +162,13 @@ class SessionController extends _$SessionController {
         scopeItems.where((it) => activeIds.contains(it.id)).toList();
 
     if (_sessionMode == SessionMode.learn) {
-      _learnItems = List.of(windowItems)..shuffle(_engine.random);
-      for (final it in _learnItems) {
+      // Repeat the active window `rounds` times; shuffle each round on its own so
+      // every item appears exactly `rounds` times, spread across the session.
+      _learnItems = [
+        for (var r = 0; r < _cfg.rounds; r++)
+          ...(List.of(windowItems)..shuffle(_engine.random)),
+      ];
+      for (final it in windowItems) {
         _exemplarsByItem[it.id] = await content.getExemplars(it.id);
       }
       return _buildLearnTrial();
@@ -190,7 +198,8 @@ class SessionController extends _$SessionController {
     final exemplars = _exemplarsByItem[_item.id] ?? const [];
     _exemplar = exemplars.isEmpty
         ? _placeholderExemplar
-        : _engine.pickExemplar(exemplars);
+        : _engine.pickExemplar(exemplars, avoid: _lastExemplarByItem[_item.id]);
+    _lastExemplarByItem[_item.id] = _exemplar.id;
     return _view(
       trialMode: TrialMode.display,
       phase: SessionPhase.asking,

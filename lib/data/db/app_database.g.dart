@@ -1398,6 +1398,16 @@ class $ChildProfilesTable extends ChildProfiles
     requiredDuringInsert: false,
     defaultValue: const Constant(3),
   );
+  static const VerificationMeta _roundsMeta = const VerificationMeta('rounds');
+  @override
+  late final GeneratedColumn<int> rounds = GeneratedColumn<int>(
+    'rounds',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(1),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -1408,6 +1418,7 @@ class $ChildProfilesTable extends ChildProfiles
     sessionLength,
     activeWindowSize,
     masteryThreshold,
+    rounds,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -1478,6 +1489,12 @@ class $ChildProfilesTable extends ChildProfiles
         ),
       );
     }
+    if (data.containsKey('rounds')) {
+      context.handle(
+        _roundsMeta,
+        rounds.isAcceptableOrUnknown(data['rounds']!, _roundsMeta),
+      );
+    }
     return context;
   }
 
@@ -1521,6 +1538,10 @@ class $ChildProfilesTable extends ChildProfiles
         DriftSqlType.int,
         data['${effectivePrefix}mastery_threshold'],
       )!,
+      rounds: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}rounds'],
+      )!,
     );
   }
 
@@ -1542,6 +1563,10 @@ class ChildProfileRow extends DataClass implements Insertable<ChildProfileRow> {
   final int sessionLength;
   final int activeWindowSize;
   final int masteryThreshold;
+
+  /// Learn-mode repeat factor: each active-window item is shown this many times
+  /// per browse session (screens = window size × rounds).
+  final int rounds;
   const ChildProfileRow({
     required this.id,
     required this.name,
@@ -1551,6 +1576,7 @@ class ChildProfileRow extends DataClass implements Insertable<ChildProfileRow> {
     required this.sessionLength,
     required this.activeWindowSize,
     required this.masteryThreshold,
+    required this.rounds,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -1567,6 +1593,7 @@ class ChildProfileRow extends DataClass implements Insertable<ChildProfileRow> {
     map['session_length'] = Variable<int>(sessionLength);
     map['active_window_size'] = Variable<int>(activeWindowSize);
     map['mastery_threshold'] = Variable<int>(masteryThreshold);
+    map['rounds'] = Variable<int>(rounds);
     return map;
   }
 
@@ -1580,6 +1607,7 @@ class ChildProfileRow extends DataClass implements Insertable<ChildProfileRow> {
       sessionLength: Value(sessionLength),
       activeWindowSize: Value(activeWindowSize),
       masteryThreshold: Value(masteryThreshold),
+      rounds: Value(rounds),
     );
   }
 
@@ -1599,6 +1627,7 @@ class ChildProfileRow extends DataClass implements Insertable<ChildProfileRow> {
       sessionLength: serializer.fromJson<int>(json['sessionLength']),
       activeWindowSize: serializer.fromJson<int>(json['activeWindowSize']),
       masteryThreshold: serializer.fromJson<int>(json['masteryThreshold']),
+      rounds: serializer.fromJson<int>(json['rounds']),
     );
   }
   @override
@@ -1615,6 +1644,7 @@ class ChildProfileRow extends DataClass implements Insertable<ChildProfileRow> {
       'sessionLength': serializer.toJson<int>(sessionLength),
       'activeWindowSize': serializer.toJson<int>(activeWindowSize),
       'masteryThreshold': serializer.toJson<int>(masteryThreshold),
+      'rounds': serializer.toJson<int>(rounds),
     };
   }
 
@@ -1627,6 +1657,7 @@ class ChildProfileRow extends DataClass implements Insertable<ChildProfileRow> {
     int? sessionLength,
     int? activeWindowSize,
     int? masteryThreshold,
+    int? rounds,
   }) => ChildProfileRow(
     id: id ?? this.id,
     name: name ?? this.name,
@@ -1636,6 +1667,7 @@ class ChildProfileRow extends DataClass implements Insertable<ChildProfileRow> {
     sessionLength: sessionLength ?? this.sessionLength,
     activeWindowSize: activeWindowSize ?? this.activeWindowSize,
     masteryThreshold: masteryThreshold ?? this.masteryThreshold,
+    rounds: rounds ?? this.rounds,
   );
   ChildProfileRow copyWithCompanion(ChildProfilesCompanion data) {
     return ChildProfileRow(
@@ -1655,6 +1687,7 @@ class ChildProfileRow extends DataClass implements Insertable<ChildProfileRow> {
       masteryThreshold: data.masteryThreshold.present
           ? data.masteryThreshold.value
           : this.masteryThreshold,
+      rounds: data.rounds.present ? data.rounds.value : this.rounds,
     );
   }
 
@@ -1668,7 +1701,8 @@ class ChildProfileRow extends DataClass implements Insertable<ChildProfileRow> {
           ..write('choicesCount: $choicesCount, ')
           ..write('sessionLength: $sessionLength, ')
           ..write('activeWindowSize: $activeWindowSize, ')
-          ..write('masteryThreshold: $masteryThreshold')
+          ..write('masteryThreshold: $masteryThreshold, ')
+          ..write('rounds: $rounds')
           ..write(')'))
         .toString();
   }
@@ -1683,6 +1717,7 @@ class ChildProfileRow extends DataClass implements Insertable<ChildProfileRow> {
     sessionLength,
     activeWindowSize,
     masteryThreshold,
+    rounds,
   );
   @override
   bool operator ==(Object other) =>
@@ -1695,7 +1730,8 @@ class ChildProfileRow extends DataClass implements Insertable<ChildProfileRow> {
           other.choicesCount == this.choicesCount &&
           other.sessionLength == this.sessionLength &&
           other.activeWindowSize == this.activeWindowSize &&
-          other.masteryThreshold == this.masteryThreshold);
+          other.masteryThreshold == this.masteryThreshold &&
+          other.rounds == this.rounds);
 }
 
 class ChildProfilesCompanion extends UpdateCompanion<ChildProfileRow> {
@@ -1707,6 +1743,7 @@ class ChildProfilesCompanion extends UpdateCompanion<ChildProfileRow> {
   final Value<int> sessionLength;
   final Value<int> activeWindowSize;
   final Value<int> masteryThreshold;
+  final Value<int> rounds;
   final Value<int> rowid;
   const ChildProfilesCompanion({
     this.id = const Value.absent(),
@@ -1717,6 +1754,7 @@ class ChildProfilesCompanion extends UpdateCompanion<ChildProfileRow> {
     this.sessionLength = const Value.absent(),
     this.activeWindowSize = const Value.absent(),
     this.masteryThreshold = const Value.absent(),
+    this.rounds = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   ChildProfilesCompanion.insert({
@@ -1728,6 +1766,7 @@ class ChildProfilesCompanion extends UpdateCompanion<ChildProfileRow> {
     this.sessionLength = const Value.absent(),
     this.activeWindowSize = const Value.absent(),
     this.masteryThreshold = const Value.absent(),
+    this.rounds = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        name = Value(name),
@@ -1742,6 +1781,7 @@ class ChildProfilesCompanion extends UpdateCompanion<ChildProfileRow> {
     Expression<int>? sessionLength,
     Expression<int>? activeWindowSize,
     Expression<int>? masteryThreshold,
+    Expression<int>? rounds,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -1753,6 +1793,7 @@ class ChildProfilesCompanion extends UpdateCompanion<ChildProfileRow> {
       if (sessionLength != null) 'session_length': sessionLength,
       if (activeWindowSize != null) 'active_window_size': activeWindowSize,
       if (masteryThreshold != null) 'mastery_threshold': masteryThreshold,
+      if (rounds != null) 'rounds': rounds,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -1766,6 +1807,7 @@ class ChildProfilesCompanion extends UpdateCompanion<ChildProfileRow> {
     Value<int>? sessionLength,
     Value<int>? activeWindowSize,
     Value<int>? masteryThreshold,
+    Value<int>? rounds,
     Value<int>? rowid,
   }) {
     return ChildProfilesCompanion(
@@ -1777,6 +1819,7 @@ class ChildProfilesCompanion extends UpdateCompanion<ChildProfileRow> {
       sessionLength: sessionLength ?? this.sessionLength,
       activeWindowSize: activeWindowSize ?? this.activeWindowSize,
       masteryThreshold: masteryThreshold ?? this.masteryThreshold,
+      rounds: rounds ?? this.rounds,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -1810,6 +1853,9 @@ class ChildProfilesCompanion extends UpdateCompanion<ChildProfileRow> {
     if (masteryThreshold.present) {
       map['mastery_threshold'] = Variable<int>(masteryThreshold.value);
     }
+    if (rounds.present) {
+      map['rounds'] = Variable<int>(rounds.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -1827,6 +1873,7 @@ class ChildProfilesCompanion extends UpdateCompanion<ChildProfileRow> {
           ..write('sessionLength: $sessionLength, ')
           ..write('activeWindowSize: $activeWindowSize, ')
           ..write('masteryThreshold: $masteryThreshold, ')
+          ..write('rounds: $rounds, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -5908,6 +5955,7 @@ typedef $$ChildProfilesTableCreateCompanionBuilder =
       Value<int> sessionLength,
       Value<int> activeWindowSize,
       Value<int> masteryThreshold,
+      Value<int> rounds,
       Value<int> rowid,
     });
 typedef $$ChildProfilesTableUpdateCompanionBuilder =
@@ -5920,6 +5968,7 @@ typedef $$ChildProfilesTableUpdateCompanionBuilder =
       Value<int> sessionLength,
       Value<int> activeWindowSize,
       Value<int> masteryThreshold,
+      Value<int> rounds,
       Value<int> rowid,
     });
 
@@ -6034,6 +6083,11 @@ class $$ChildProfilesTableFilterComposer
 
   ColumnFilters<int> get masteryThreshold => $composableBuilder(
     column: $table.masteryThreshold,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get rounds => $composableBuilder(
+    column: $table.rounds,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -6161,6 +6215,11 @@ class $$ChildProfilesTableOrderingComposer
     column: $table.masteryThreshold,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<int> get rounds => $composableBuilder(
+    column: $table.rounds,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$ChildProfilesTableAnnotationComposer
@@ -6203,6 +6262,9 @@ class $$ChildProfilesTableAnnotationComposer
     column: $table.masteryThreshold,
     builder: (column) => column,
   );
+
+  GeneratedColumn<int> get rounds =>
+      $composableBuilder(column: $table.rounds, builder: (column) => column);
 
   Expression<T> learningStatesRefs<T extends Object>(
     Expression<T> Function($$LearningStatesTableAnnotationComposer a) f,
@@ -6320,6 +6382,7 @@ class $$ChildProfilesTableTableManager
                 Value<int> sessionLength = const Value.absent(),
                 Value<int> activeWindowSize = const Value.absent(),
                 Value<int> masteryThreshold = const Value.absent(),
+                Value<int> rounds = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => ChildProfilesCompanion(
                 id: id,
@@ -6330,6 +6393,7 @@ class $$ChildProfilesTableTableManager
                 sessionLength: sessionLength,
                 activeWindowSize: activeWindowSize,
                 masteryThreshold: masteryThreshold,
+                rounds: rounds,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -6342,6 +6406,7 @@ class $$ChildProfilesTableTableManager
                 Value<int> sessionLength = const Value.absent(),
                 Value<int> activeWindowSize = const Value.absent(),
                 Value<int> masteryThreshold = const Value.absent(),
+                Value<int> rounds = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => ChildProfilesCompanion.insert(
                 id: id,
@@ -6352,6 +6417,7 @@ class $$ChildProfilesTableTableManager
                 sessionLength: sessionLength,
                 activeWindowSize: activeWindowSize,
                 masteryThreshold: masteryThreshold,
+                rounds: rounds,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0

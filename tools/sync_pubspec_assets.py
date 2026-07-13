@@ -19,6 +19,13 @@ import json
 import sys
 from pathlib import Path
 
+# على ويندوز الطرفية الافتراضية cp1252 فتفشل طباعة العربية؛ نفرض UTF-8.
+for _stream in (sys.stdout, sys.stderr):
+    try:
+        _stream.reconfigure(encoding="utf-8")
+    except (AttributeError, ValueError):
+        pass
+
 ROOT = Path(__file__).resolve().parent.parent
 CONTENT_JSON = ROOT / "assets" / "content" / "content.json"
 PUBSPEC = ROOT / "pubspec.yaml"

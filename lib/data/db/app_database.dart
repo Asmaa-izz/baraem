@@ -28,7 +28,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.executor);
 
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 6;
 
   /// Store dates as ISO-8601 UTC text so `nextDue <= now` comparisons are
   /// lexicographically correct and identical across web/native.
@@ -91,6 +91,9 @@ class AppDatabase extends _$AppDatabase {
             // FKs). Items.audioPath is left in place to avoid rebuilding the
             // FK-heavy items table; it's simply no longer read.
             await m.alterTable(TableMigration(praises));
+          }
+          if (from < 6) {
+            await m.addColumn(childProfiles, childProfiles.rounds);
           }
         },
         beforeOpen: (details) async {

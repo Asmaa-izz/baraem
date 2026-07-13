@@ -414,6 +414,7 @@ class _SettingsTab extends ConsumerWidget {
               choicesCount: 2,
               activeWindowSize: 5,
               masteryThreshold: 3,
+              rounds: 1,
               sessionLength: profile.mode == ProfileMode.support ? 8 : 12,
             ));
       }
@@ -480,6 +481,13 @@ class _ProfileSettings extends ConsumerWidget {
             min: 3,
             max: 10,
             onChanged: (v) => save(profile.copyWith(activeWindowSize: v)),
+          ),
+          _Stepper(
+            label: l.settingsRounds,
+            value: profile.rounds,
+            min: 1,
+            max: 5,
+            onChanged: (v) => save(profile.copyWith(rounds: v)),
           ),
         ],
       ),

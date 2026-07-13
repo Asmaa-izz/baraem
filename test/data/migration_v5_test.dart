@@ -31,7 +31,12 @@ void main() {
       CREATE TABLE praises (id TEXT NOT NULL PRIMARY KEY, label TEXT NOT NULL,
         audio_path TEXT NOT NULL, source TEXT NOT NULL,
         enabled INTEGER NOT NULL DEFAULT 1);
+      CREATE TABLE child_profiles (id TEXT NOT NULL PRIMARY KEY, name TEXT NOT NULL,
+        avatar TEXT NOT NULL, mode TEXT NOT NULL,
+        choices_count INTEGER NOT NULL DEFAULT 2, session_length INTEGER NOT NULL DEFAULT 12,
+        active_window_size INTEGER NOT NULL DEFAULT 5, mastery_threshold INTEGER NOT NULL DEFAULT 3);
       INSERT INTO categories VALUES ('fruits','فواكه','🍎',0,'system');
+      INSERT INTO child_profiles (id,name,avatar,mode) VALUES ('kid','سارة','🦊','normal');
       INSERT INTO items (id,label,category_id,source,audio_path)
         VALUES ('apple','تفاحة','fruits','user','/data/media/apple.m4a');
       INSERT INTO items (id,label,category_id,source,audio_path)
@@ -47,9 +52,15 @@ void main() {
 
   tearDown(() => dir.deleteSync(recursive: true));
 
-  test('upgrade 4→5 migrates only parent audio into Sounds', () async {
+  test('upgrade 4→6 migrates parent audio and backfills rounds', () async {
     final db = AppDatabase(NativeDatabase(file));
     addTearDown(db.close);
+
+    // v6: rounds column added with default 1 on the pre-existing profile row.
+    final kid = await (db.select(db.childProfiles)
+          ..where((p) => p.id.equals('kid')))
+        .getSingle();
+    expect(kid.rounds, 1);
 
     final sounds = await db.select(db.sounds).get();
 

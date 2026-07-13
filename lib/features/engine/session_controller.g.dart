@@ -62,7 +62,7 @@ final class SessionControllerProvider
   }
 }
 
-String _$sessionControllerHash() => r'f02a53906bb8c2e7436c28d38eaa68eca8a91aeb';
+String _$sessionControllerHash() => r'415a8f0ca5daea0ab7f473e52ba2c843dbfe9e08';
 
 /// Drives a session. Two explicit modes chosen on the home screen:
 /// - learn: browse the chosen category's images (display only, never quizzes);

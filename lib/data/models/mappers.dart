@@ -46,6 +46,7 @@ extension ChildProfileRowMapper on ChildProfileRow {
         sessionLength: sessionLength,
         activeWindowSize: activeWindowSize,
         masteryThreshold: masteryThreshold,
+        rounds: rounds,
       );
 }
 

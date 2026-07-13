@@ -43,3 +43,10 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Generated local review tool (rebuild via tools/build_image_review.py)
+tools/image_review*.html
+
+# Local secrets (API keys)
+.env
+.ENV

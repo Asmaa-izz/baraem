@@ -27,6 +27,7 @@ import '../../../data/models/domain.dart';
 import '../../../data/seed/fallback_emoji.dart';
 import '../../engine/engine_models.dart';
 import '../../engine/session_controller.dart';
+import 'presentation_config.dart';
 
 /// S3 + S4 — one session runner that shows a learn view or a quiz view
 /// depending on the current trial's mode.
@@ -106,9 +107,10 @@ class _SessionScreenState extends ConsumerState<SessionScreen> {
       } else if (s.phase == SessionPhase.correct) {
         if (was != SessionPhase.correct) _celebrate(s);
         _advanceTimer?.cancel();
-        _advanceTimer = Timer(const Duration(milliseconds: 1150), () {
-          ref.read(sessionControllerProvider(id).notifier).advance();
-        });
+        _advanceTimer = Timer(
+          PresentationConfig.forMode(s.profileMode).advanceDelay,
+          () => ref.read(sessionControllerProvider(id).notifier).advance(),
+        );
       } else if (s.phase == SessionPhase.hint && was != SessionPhase.hint) {
         _giveHint(s);
       }
@@ -129,6 +131,7 @@ class _SessionScreenState extends ConsumerState<SessionScreen> {
               return const Center(child: CircularProgressIndicator());
             }
             _autoSpeak(s);
+            final pres = PresentationConfig.forMode(s.profileMode);
             return Focus(
               autofocus: true,
               onKeyEvent: (node, event) => _onKey(event, s, controller),
@@ -154,6 +157,7 @@ class _SessionScreenState extends ConsumerState<SessionScreen> {
                             )
                           : _QuizView(
                               s: s,
+                              pres: pres,
                               onChoose: controller.answer,
                               onReplay: () => ref
                                   .read(audioServiceProvider)
@@ -297,11 +301,13 @@ class _LearnView extends StatelessWidget {
 class _QuizView extends StatelessWidget {
   const _QuizView({
     required this.s,
+    required this.pres,
     required this.onChoose,
     required this.onReplay,
   });
 
   final SessionState s;
+  final PresentationConfig pres;
   final ValueChanged<String> onChoose;
   final VoidCallback onReplay;
 
@@ -313,6 +319,16 @@ class _QuizView extends StatelessWidget {
       if (o.item.id == s.chosenItemId) return ChoiceState.hint;
     }
     return ChoiceState.idle;
+  }
+
+  /// Support mode spotlights the answer: once the answer is revealed (correct
+  /// or hint), the untapped, non-answer tiles fade back so the right one — with
+  /// its sage border, glow and tick — is unmistakable. Normal mode never dims.
+  double _opacityFor(ChoiceState state) {
+    if (!pres.spotlightAnswer) return 1;
+    final revealed =
+        s.phase == SessionPhase.correct || s.phase == SessionPhase.hint;
+    return revealed && state == ChoiceState.idle ? 0.35 : 1;
   }
 
   @override
@@ -356,18 +372,24 @@ class _QuizView extends StatelessWidget {
               child: GridView.count(
                 shrinkWrap: true,
                 crossAxisCount: crossAxis,
-                mainAxisSpacing: BaraemSpace.md,
-                crossAxisSpacing: BaraemSpace.md,
+                mainAxisSpacing: pres.choiceSpacing,
+                crossAxisSpacing: pres.choiceSpacing,
                 physics: const NeverScrollableScrollPhysics(),
                 children: [
                   for (final o in s.options)
-                    ChoiceCard(
-                      state: _stateFor(o),
-                      onTap: s.phase == SessionPhase.correct
-                          ? null
-                          : () => onChoose(o.item.id),
-                      child: _OptionTile(option: o),
-                    ),
+                    if (_stateFor(o) case final state)
+                      AnimatedOpacity(
+                        opacity: _opacityFor(state),
+                        duration: motionDuration(context, BaraemMotion.feedback),
+                        curve: BaraemMotion.curve,
+                        child: ChoiceCard(
+                          state: state,
+                          onTap: s.phase == SessionPhase.correct
+                              ? null
+                              : () => onChoose(o.item.id),
+                          child: _OptionTile(option: o),
+                        ),
+                      ),
                 ],
               ),
             );
@@ -383,7 +405,12 @@ class _QuizView extends StatelessWidget {
         content,
         if (s.phase == SessionPhase.correct)
           Positioned.fill(
-            child: IgnorePointer(child: _Sparkles(key: ValueKey(s.index))),
+            child: IgnorePointer(
+              child: _Sparkles(
+                key: ValueKey(s.index),
+                gentle: pres.gentleCelebration,
+              ),
+            ),
           ),
       ],
     );
@@ -422,26 +449,32 @@ class _OptionTile extends StatelessWidget {
 }
 
 /// A soft, one-shot sparkle burst on a correct answer — gentle, calm, and
-/// skipped entirely when reduced-motion is on.
+/// skipped entirely when reduced-motion is on. In [gentle] mode (support) it
+/// shows fewer sparkles with a shorter, softer rise to lower the sensory load.
 class _Sparkles extends StatelessWidget {
-  const _Sparkles({super.key});
+  const _Sparkles({super.key, this.gentle = false});
+
+  final bool gentle;
 
   static const _emojis = ['✨', '⭐', '🌟', '✨', '⭐', '🌟'];
 
   @override
   Widget build(BuildContext context) {
     if (!motionOn(context)) return const SizedBox.shrink();
+    final count = gentle ? 3 : _emojis.length;
+    final rise = gentle ? -40.0 : -70.0;
+    final spread = gentle ? 0.5 : 0.28;
     return Stack(
       children: [
-        for (var i = 0; i < _emojis.length; i++)
+        for (var i = 0; i < count; i++)
           Align(
-            alignment: Alignment(-0.7 + i * 0.28, 0.15),
+            alignment: Alignment(-0.7 + i * spread, 0.15),
             child: Text(_emojis[i], style: const TextStyle(fontSize: 30))
                 .animate()
                 .fadeIn(duration: 180.ms)
                 .moveY(
                   begin: 10,
-                  end: -70,
+                  end: rise,
                   duration: 800.ms,
                   curve: Curves.easeOut,
                 )

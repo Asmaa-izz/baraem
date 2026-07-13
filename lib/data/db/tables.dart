@@ -68,6 +68,10 @@ class ChildProfiles extends Table {
   IntColumn get activeWindowSize => integer().withDefault(const Constant(5))();
   IntColumn get masteryThreshold => integer().withDefault(const Constant(3))();
 
+  /// Learn-mode repeat factor: each active-window item is shown this many times
+  /// per browse session (screens = window size × rounds).
+  IntColumn get rounds => integer().withDefault(const Constant(1))();
+
   @override
   Set<Column> get primaryKey => {id};
 }

@@ -9,6 +9,7 @@ class ProfileConfig {
     required this.sessionLength,
     required this.activeWindowSize,
     required this.masteryThreshold,
+    required this.rounds,
     required this.choicesCount,
     required this.maxChoices,
     required this.exposuresBeforeQuiz,
@@ -21,6 +22,9 @@ class ProfileConfig {
   final int sessionLength;
   final int activeWindowSize;
   final int masteryThreshold;
+
+  /// Learn-mode repeat factor (browse screens = active window × rounds).
+  final int rounds;
 
   /// Current number of quiz options (starts at 2 — errorless learning).
   final int choicesCount;
@@ -45,6 +49,7 @@ class ProfileConfig {
       sessionLength: p.sessionLength,
       activeWindowSize: p.activeWindowSize,
       masteryThreshold: p.masteryThreshold,
+      rounds: p.rounds,
       choicesCount: p.choicesCount,
       maxChoices: support ? 3 : 4,
       exposuresBeforeQuiz: support ? 2 : 1,

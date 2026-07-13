@@ -210,6 +210,51 @@ void main() {
     expect(shownCategories, {'animals'}, reason: 'only the chosen category shows');
   });
 
+  test('learn rounds: each active-window item is shown `rounds` times',
+      () async {
+    final db = AppDatabase.forTesting(NativeDatabase.memory());
+    final container = ProviderContainer(overrides: [
+      appDatabaseProvider.overrideWithValue(db),
+      clockProvider.overrideWithValue(FixedClock(DateTime.utc(2026, 7, 11))),
+      randomProvider.overrideWithValue(Random(7)),
+    ]);
+    addTearDown(() async {
+      container.dispose();
+      await db.close();
+    });
+
+    await seedTestContent(db); // 6 items; window default 5
+    final profile = await container
+        .read(profileRepositoryProvider)
+        .createProfile(name: 'ط', avatar: '🐨', mode: ProfileMode.normal);
+    await container
+        .read(profileRepositoryProvider)
+        .updateProfile(profile.copyWith(rounds: 3));
+    container.read(currentProfileIdProvider.notifier).select(profile.id);
+    container.read(selectedCategoryProvider.notifier).select('household');
+    container.read(sessionModeControllerProvider.notifier).set(SessionMode.learn);
+
+    final ctrl = container.read(sessionControllerProvider(profile.id).notifier);
+    var s = await container.read(sessionControllerProvider(profile.id).future);
+    expect(s.total, 15, reason: '5 window items × 3 rounds');
+
+    final counts = <String, int>{};
+    var total = 0;
+    var guard = 0;
+    while (!s.isFinished && guard++ < 200) {
+      expect(s.mode, TrialMode.display);
+      counts[s.item.id] = (counts[s.item.id] ?? 0) + 1;
+      total++;
+      await ctrl.advance();
+      s = container.read(sessionControllerProvider(profile.id)).value!;
+    }
+
+    expect(total, 15, reason: 'screens = 5 window items × 3 rounds');
+    expect(counts.length, 5, reason: 'only the 5 active-window items appear');
+    expect(counts.values, everyElement(3),
+        reason: 'each active item is shown exactly `rounds` (3) times');
+  });
+
   test('quiz mode is scoped to the chosen category (no cross-category leak)',
       () async {
     final db = AppDatabase.forTesting(NativeDatabase.memory());
