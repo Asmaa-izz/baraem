@@ -98,6 +98,26 @@ flutter:
     - assets/content/household/kettle/audio/
     - assets/content/household/tray/
     - assets/content/household/tray/audio/
+    - assets/content/household/board/
+    - assets/content/household/board/audio/
+    - assets/content/household/colander/
+    - assets/content/household/colander/audio/
+    - assets/content/household/ladle/
+    - assets/content/household/ladle/audio/
+    - assets/content/household/whisk/
+    - assets/content/household/whisk/audio/
+    - assets/content/household/grater/
+    - assets/content/household/grater/audio/
+    - assets/content/household/rollingpin/
+    - assets/content/household/rollingpin/audio/
+    - assets/content/household/blender/
+    - assets/content/household/blender/audio/
+    - assets/content/household/toaster/
+    - assets/content/household/toaster/audio/
+    - assets/content/household/jar/
+    - assets/content/household/jar/audio/
+    - assets/content/household/thermos/
+    - assets/content/household/thermos/audio/
     - assets/content/animals/cat/
     - assets/content/animals/cat/audio/
     - assets/content/animals/dog/
@@ -118,6 +138,46 @@ flutter:
     - assets/content/animals/mouse/audio/
     - assets/content/animals/sheep/
     - assets/content/animals/sheep/audio/
+    - assets/content/animals/bear/
+    - assets/content/animals/bear/audio/
+    - assets/content/animals/tiger/
+    - assets/content/animals/tiger/audio/
+    - assets/content/animals/monkey/
+    - assets/content/animals/monkey/audio/
+    - assets/content/animals/zebra/
+    - assets/content/animals/zebra/audio/
+    - assets/content/animals/giraffe/
+    - assets/content/animals/giraffe/audio/
+    - assets/content/animals/deer/
+    - assets/content/animals/deer/audio/
+    - assets/content/animals/fox/
+    - assets/content/animals/fox/audio/
+    - assets/content/animals/wolf/
+    - assets/content/animals/wolf/audio/
+    - assets/content/animals/camel/
+    - assets/content/animals/camel/audio/
+    - assets/content/animals/goat/
+    - assets/content/animals/goat/audio/
+    - assets/content/animals/pig/
+    - assets/content/animals/pig/audio/
+    - assets/content/animals/squirrel/
+    - assets/content/animals/squirrel/audio/
+    - assets/content/animals/hedgehog/
+    - assets/content/animals/hedgehog/audio/
+    - assets/content/animals/frog/
+    - assets/content/animals/frog/audio/
+    - assets/content/animals/turtle/
+    - assets/content/animals/turtle/audio/
+    - assets/content/animals/snake/
+    - assets/content/animals/snake/audio/
+    - assets/content/animals/crocodile/
+    - assets/content/animals/crocodile/audio/
+    - assets/content/animals/kangaroo/
+    - assets/content/animals/kangaroo/audio/
+    - assets/content/animals/panda/
+    - assets/content/animals/panda/audio/
+    - assets/content/animals/donkey/
+    - assets/content/animals/donkey/audio/
     - assets/content/birds/duck/
     - assets/content/birds/duck/audio/
     - assets/content/birds/bird/
@@ -148,6 +208,46 @@ flutter:
     - assets/content/vegetables/garlic/audio/
     - assets/content/vegetables/corn/
     - assets/content/vegetables/corn/audio/
+    - assets/content/vegetables/zucchini/
+    - assets/content/vegetables/zucchini/audio/
+    - assets/content/vegetables/cauliflower/
+    - assets/content/vegetables/cauliflower/audio/
+    - assets/content/vegetables/broccoli/
+    - assets/content/vegetables/broccoli/audio/
+    - assets/content/vegetables/cabbage/
+    - assets/content/vegetables/cabbage/audio/
+    - assets/content/vegetables/spinach/
+    - assets/content/vegetables/spinach/audio/
+    - assets/content/vegetables/pumpkin/
+    - assets/content/vegetables/pumpkin/audio/
+    - assets/content/vegetables/radish/
+    - assets/content/vegetables/radish/audio/
+    - assets/content/vegetables/greenbeans/
+    - assets/content/vegetables/greenbeans/audio/
+    - assets/content/vegetables/peas/
+    - assets/content/vegetables/peas/audio/
+    - assets/content/vegetables/mushroom/
+    - assets/content/vegetables/mushroom/audio/
+    - assets/content/vegetables/celery/
+    - assets/content/vegetables/celery/audio/
+    - assets/content/vegetables/beet/
+    - assets/content/vegetables/beet/audio/
+    - assets/content/vegetables/okra/
+    - assets/content/vegetables/okra/audio/
+    - assets/content/vegetables/artichoke/
+    - assets/content/vegetables/artichoke/audio/
+    - assets/content/vegetables/turnip/
+    - assets/content/vegetables/turnip/audio/
+    - assets/content/vegetables/leek/
+    - assets/content/vegetables/leek/audio/
+    - assets/content/vegetables/asparagus/
+    - assets/content/vegetables/asparagus/audio/
+    - assets/content/vegetables/sweetpotato/
+    - assets/content/vegetables/sweetpotato/audio/
+    - assets/content/vegetables/chili/
+    - assets/content/vegetables/chili/audio/
+    - assets/content/vegetables/parsley/
+    - assets/content/vegetables/parsley/audio/
     - assets/content/fruits/apple/
     - assets/content/fruits/apple/audio/
     - assets/content/fruits/banana/
@@ -168,6 +268,46 @@ flutter:
     - assets/content/fruits/peach/audio/
     - assets/content/fruits/cherry/
     - assets/content/fruits/cherry/audio/
+    - assets/content/fruits/pineapple/
+    - assets/content/fruits/pineapple/audio/
+    - assets/content/fruits/mango/
+    - assets/content/fruits/mango/audio/
+    - assets/content/fruits/kiwi/
+    - assets/content/fruits/kiwi/audio/
+    - assets/content/fruits/pomegranate/
+    - assets/content/fruits/pomegranate/audio/
+    - assets/content/fruits/fig/
+    - assets/content/fruits/fig/audio/
+    - assets/content/fruits/plum/
+    - assets/content/fruits/plum/audio/
+    - assets/content/fruits/apricot/
+    - assets/content/fruits/apricot/audio/
+    - assets/content/fruits/dates/
+    - assets/content/fruits/dates/audio/
+    - assets/content/fruits/guava/
+    - assets/content/fruits/guava/audio/
+    - assets/content/fruits/melon/
+    - assets/content/fruits/melon/audio/
+    - assets/content/fruits/quince/
+    - assets/content/fruits/quince/audio/
+    - assets/content/fruits/avocado/
+    - assets/content/fruits/avocado/audio/
+    - assets/content/fruits/coconut/
+    - assets/content/fruits/coconut/audio/
+    - assets/content/fruits/blueberry/
+    - assets/content/fruits/blueberry/audio/
+    - assets/content/fruits/loquat/
+    - assets/content/fruits/loquat/audio/
+    - assets/content/fruits/papaya/
+    - assets/content/fruits/papaya/audio/
+    - assets/content/fruits/grapefruit/
+    - assets/content/fruits/grapefruit/audio/
+    - assets/content/fruits/blackberry/
+    - assets/content/fruits/blackberry/audio/
+    - assets/content/fruits/persimmon/
+    - assets/content/fruits/persimmon/audio/
+    - assets/content/fruits/pricklypear/
+    - assets/content/fruits/pricklypear/audio/
     - assets/content/clothes/shirt/
     - assets/content/clothes/shirt/audio/
     - assets/content/clothes/pants/
@@ -192,6 +332,66 @@ flutter:
     - assets/content/clothes/slippers/audio/
     - assets/content/clothes/glasses/
     - assets/content/clothes/glasses/audio/
+    - assets/content/clothes/jalabiya/
+    - assets/content/clothes/jalabiya/audio/
+    - assets/content/clothes/shela/
+    - assets/content/clothes/shela/audio/
+    - assets/content/clothes/abaya/
+    - assets/content/clothes/abaya/audio/
+    - assets/content/clothes/hairclip/
+    - assets/content/clothes/hairclip/audio/
+    - assets/content/clothes/necklace/
+    - assets/content/clothes/necklace/audio/
+    - assets/content/clothes/bracelet/
+    - assets/content/clothes/bracelet/audio/
+    - assets/content/clothes/watch/
+    - assets/content/clothes/watch/audio/
+    - assets/content/clothes/ring/
+    - assets/content/clothes/ring/audio/
+    - assets/content/clothes/vest/
+    - assets/content/clothes/vest/audio/
+    - assets/content/clothes/leatherjacket/
+    - assets/content/clothes/leatherjacket/audio/
+    - assets/content/home/mattress/
+    - assets/content/home/mattress/audio/
+    - assets/content/home/blanket/
+    - assets/content/home/blanket/audio/
+    - assets/content/home/carpet/
+    - assets/content/home/carpet/audio/
+    - assets/content/home/pillow/
+    - assets/content/home/pillow/audio/
+    - assets/content/home/curtain/
+    - assets/content/home/curtain/audio/
+    - assets/content/home/window/
+    - assets/content/home/window/audio/
+    - assets/content/home/table/
+    - assets/content/home/table/audio/
+    - assets/content/home/chair/
+    - assets/content/home/chair/audio/
+    - assets/content/home/door/
+    - assets/content/home/door/audio/
+    - assets/content/home/frame/
+    - assets/content/home/frame/audio/
+    - assets/content/home/shelf/
+    - assets/content/home/shelf/audio/
+    - assets/content/home/lamp/
+    - assets/content/home/lamp/audio/
+    - assets/content/home/wallclock/
+    - assets/content/home/wallclock/audio/
+    - assets/content/home/mirror/
+    - assets/content/home/mirror/audio/
+    - assets/content/home/broom/
+    - assets/content/home/broom/audio/
+    - assets/content/home/trashbin/
+    - assets/content/home/trashbin/audio/
+    - assets/content/home/fan/
+    - assets/content/home/fan/audio/
+    - assets/content/home/sofa/
+    - assets/content/home/sofa/audio/
+    - assets/content/home/closet/
+    - assets/content/home/closet/audio/
+    - assets/content/home/stairs/
+    - assets/content/home/stairs/audio/
   fonts:
     # Display / the word the child sees — rounded, friendly (variable weight axis)
     - family: Baloo Bhaijaan 2

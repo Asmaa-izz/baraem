@@ -26,7 +26,7 @@ for _stream in (sys.stdout, sys.stderr):
 REPO_ROOT = Path(__file__).resolve().parent.parent
 CONTENT_DIR = REPO_ROOT / "assets" / "content"
 CONTENT_JSON = CONTENT_DIR / "content.json"
-CATEGORIES = ["household", "animals", "vegetables", "fruits", "clothes"]
+CATEGORIES = ["household", "animals", "birds", "vegetables", "fruits", "clothes", "home"]
 
 
 def build_caption(item, index, style_count, styles):
