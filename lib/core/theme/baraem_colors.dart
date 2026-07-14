@@ -54,8 +54,10 @@ class BaraemColors extends ThemeExtension<BaraemColors> {
 
   /// Guidance color for a content category (DESIGN.md "لون لكل مجموعة").
   Color category(String id) => switch (id) {
-        'household' => sage, // أدوات المنزل
+        'household' => sage, // أدوات المطبخ
         'animals' => sky, // حيوانات
+        'birds' => lavender, // الطيور
+        'home' => sageDeep, // أدوات المنزل
         'fruits' => apricot, // فواكه
         'vegetables' => honey, // الخضراوات
         'colors' => lavender, // ألوان وأشكال

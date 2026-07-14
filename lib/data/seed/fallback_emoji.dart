@@ -12,16 +12,30 @@ const Map<String, String> kFallbackEmoji = {
   // الحيوانات
   'cat': '🐱',
   'dog': '🐶',
-  'bird': '🐦',
   'horse': '🐴',
-  'duck': '🦆',
   'rabbit': '🐰',
+  'mouse': '🐭',
+  'sheep': '🐑',
+  // الطيور
+  'bird': '🐦',
+  'duck': '🦆',
+  'chicken': '🐔',
+  'falcon': '🦅',
+  'owl': '🦉',
+  // أدوات المنزل (أثاث ومقتنيات)
+  'mattress': '🛏️',
+  'window': '🪟',
+  'chair': '🪑',
+  'door': '🚪',
+  'frame': '🖼️',
 };
 
 /// Category-level emoji fallback (also used as the category icon default).
 const Map<String, String> kCategoryEmoji = {
   'household': '🍽️',
   'animals': '🐾',
+  'birds': '🐦',
+  'home': '🛋️',
   'fruits': '🍎',
   'colors': '🎨',
 };

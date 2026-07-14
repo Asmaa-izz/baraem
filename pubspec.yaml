@@ -102,12 +102,8 @@ flutter:
     - assets/content/animals/cat/audio/
     - assets/content/animals/dog/
     - assets/content/animals/dog/audio/
-    - assets/content/animals/bird/
-    - assets/content/animals/bird/audio/
     - assets/content/animals/horse/
     - assets/content/animals/horse/audio/
-    - assets/content/animals/duck/
-    - assets/content/animals/duck/audio/
     - assets/content/animals/rabbit/
     - assets/content/animals/rabbit/audio/
     - assets/content/animals/lion/
@@ -118,6 +114,20 @@ flutter:
     - assets/content/animals/fish/audio/
     - assets/content/animals/cow/
     - assets/content/animals/cow/audio/
+    - assets/content/animals/mouse/
+    - assets/content/animals/mouse/audio/
+    - assets/content/animals/sheep/
+    - assets/content/animals/sheep/audio/
+    - assets/content/birds/duck/
+    - assets/content/birds/duck/audio/
+    - assets/content/birds/bird/
+    - assets/content/birds/bird/audio/
+    - assets/content/birds/chicken/
+    - assets/content/birds/chicken/audio/
+    - assets/content/birds/falcon/
+    - assets/content/birds/falcon/audio/
+    - assets/content/birds/owl/
+    - assets/content/birds/owl/audio/
     - assets/content/vegetables/tomato/
     - assets/content/vegetables/tomato/audio/
     - assets/content/vegetables/cucumber/
@@ -178,6 +188,10 @@ flutter:
     - assets/content/clothes/gloves/audio/
     - assets/content/clothes/scarf/
     - assets/content/clothes/scarf/audio/
+    - assets/content/clothes/slippers/
+    - assets/content/clothes/slippers/audio/
+    - assets/content/clothes/glasses/
+    - assets/content/clothes/glasses/audio/
   fonts:
     # Display / the word the child sees — rounded, friendly (variable weight axis)
     - family: Baloo Bhaijaan 2
